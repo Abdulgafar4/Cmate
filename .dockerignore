@@ -1,0 +1,17 @@
+Dockerfile
+.dockerignore
+.git
+.gitignore
+.next
+node_modules
+npm-debug.log*
+.yc-downloader
+dist
+downloads
+*.md
+.env*
+!.env.local.example
+.DS_Store
+coverage
+.vscode
+.idea
