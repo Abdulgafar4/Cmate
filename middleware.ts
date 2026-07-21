@@ -6,7 +6,10 @@ const COOKIE_NAME = "yc_access_key";
 const PUBLIC_PATHS = [
   "/api/health",
   "/api/auth",
+  "/api/share",
+  "/api/admin",
   "/unlock",
+  "/admin",
   "/icon",
   "/opengraph-image",
 ];

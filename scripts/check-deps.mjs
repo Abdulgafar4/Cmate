@@ -100,7 +100,7 @@ async function main() {
   const missing = [];
 
   if (init) {
-    console.log("Setting up YC Downloader...\n");
+    console.log("Setting up Cmate...\n");
     await ensureEnvFile();
     await ensureDownloadDir();
     console.log("");

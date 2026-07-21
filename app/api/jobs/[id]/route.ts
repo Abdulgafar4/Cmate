@@ -23,8 +23,10 @@ export async function GET(
     totalBytes: job.totalBytes,
     speedBps: job.speedBps,
     etaSeconds: job.etaSeconds,
-    error: job.error,
     fileName: job.fileName,
     videoTitle: job.videoTitle,
+    shareToken: job.shareToken,
+    subtitlePaths: job.subtitlePaths?.map((path) => path.split("/").pop()),
+    error: job.error,
   });
 }

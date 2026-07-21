@@ -3,9 +3,11 @@
 import { useState } from "react";
 import {
   CheckCircle2,
+  Copy,
   Download,
   Loader2,
   RotateCcw,
+  X,
   XCircle,
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
@@ -17,7 +19,7 @@ import {
 import { saveFileFromUrl } from "@/lib/saveFile";
 
 interface DownloadProgressProps {
-  status: "queued" | "downloading" | "done" | "error";
+  status: "queued" | "downloading" | "done" | "error" | "cancelled";
   progress: number;
   downloadedBytes?: number;
   totalBytes?: number;
@@ -26,6 +28,9 @@ interface DownloadProgressProps {
   error?: string;
   fileName?: string;
   jobId?: string;
+  shareToken?: string;
+  subtitlePaths?: string[];
+  onCancel?: () => void;
   onReset?: () => void;
 }
 
@@ -59,6 +64,13 @@ function statusMeta(status: DownloadProgressProps["status"]) {
         spin: false,
         tone: "text-destructive",
       };
+    case "cancelled":
+      return {
+        label: "Download cancelled",
+        icon: XCircle,
+        spin: false,
+        tone: "text-muted-foreground",
+      };
   }
 }
 
@@ -85,10 +97,14 @@ export function DownloadProgress({
   error,
   fileName,
   jobId,
+  shareToken,
+  subtitlePaths,
+  onCancel,
   onReset,
 }: DownloadProgressProps) {
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string>();
+  const [copied, setCopied] = useState(false);
   const meta = statusMeta(status);
   const Icon = meta.icon;
   const showStats = status === "queued" || status === "downloading";
@@ -118,6 +134,17 @@ export function DownloadProgress({
     }
   };
 
+  const handleCopyShareLink = async () => {
+    if (!shareToken) {
+      return;
+    }
+
+    await navigator.clipboard.writeText(
+      `${window.location.origin}/api/share/${shareToken}`,
+    );
+    setCopied(true);
+  };
+
   return (
     <div
       className="animate-fade-in-up rounded-xl border border-border bg-background p-5"
@@ -138,20 +165,22 @@ export function DownloadProgress({
               ? error
               : status === "done"
                 ? "Your file is ready. Tap below to save it to your device."
+                : status === "cancelled"
+                  ? "This download was cancelled."
                 : "Download is running in the background."}
           </p>
         </div>
-        {status !== "error" && status !== "done" && (
+        {status !== "error" && status !== "done" && status !== "cancelled" && (
           <span className="text-sm font-medium tabular-nums text-muted-foreground">
             {Math.round(progress)}%
           </span>
         )}
       </div>
 
-      {status !== "error" && status !== "done" && (
+      {status !== "error" && status !== "done" && status !== "cancelled" && (
         <Progress
           value={progress}
-          className="mb-3 [&_[data-slot=progress-indicator]]:bg-primary"
+          className="mb-3 **:data-[slot=progress-indicator]:bg-primary"
           aria-label="Download progress"
         />
       )}
@@ -165,6 +194,17 @@ export function DownloadProgress({
           <StatCell label="Speed" value={formatSpeed(speedBps)} />
           <StatCell label="ETA" value={formatEta(etaSeconds)} />
         </div>
+      )}
+
+      {(status === "queued" || status === "downloading") && onCancel && (
+        <button
+          type="button"
+          onClick={onCancel}
+          className="mt-4 inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-full border border-destructive/30 bg-card px-5 text-sm font-medium text-destructive transition-colors hover:bg-destructive/10"
+        >
+          <X className="size-4" />
+          Cancel download
+        </button>
       )}
 
       {status === "done" && jobId && (
@@ -183,6 +223,16 @@ export function DownloadProgress({
               )}
               {saving ? "Saving…" : "Save to Device"}
             </button>
+            {shareToken && (
+              <button
+                type="button"
+                onClick={() => void handleCopyShareLink()}
+                className="inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-full border border-border bg-card px-5 text-sm font-medium transition-colors hover:bg-muted"
+              >
+                <Copy className="size-4" />
+                {copied ? "Share link copied" : "Copy share link"}
+              </button>
+            )}
             {onReset && (
               <button
                 type="button"
@@ -197,17 +247,27 @@ export function DownloadProgress({
           {saveError && (
             <p className="text-sm text-destructive">{saveError}</p>
           )}
+          {!!subtitlePaths?.length && (
+            <div className="rounded-lg border border-border bg-card px-3 py-2 text-sm">
+              <p className="font-medium">Subtitles</p>
+              <ul className="mt-1 list-inside list-disc text-muted-foreground">
+                {subtitlePaths.map((subtitle) => (
+                  <li key={subtitle}>{subtitle}</li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
       )}
 
-      {status === "error" && onReset && (
+      {(status === "error" || status === "cancelled") && onReset && (
         <button
           type="button"
           onClick={onReset}
           className="mt-4 inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-full border border-border bg-card px-5 text-sm font-medium transition-colors hover:bg-muted"
         >
           <RotateCcw className="size-4" />
-          Try Again
+          {status === "error" ? "Try Again" : "Download Another"}
         </button>
       )}
     </div>

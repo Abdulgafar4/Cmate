@@ -7,7 +7,7 @@ import { fileURLToPath } from "url";
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 const desktopDir = path.join(os.homedir(), "Desktop");
-const launcherName = "YC Downloader.command";
+const launcherName = "Cmate.command";
 const launcherPath = path.join(desktopDir, launcherName);
 
 const nodePath = process.execPath;
@@ -26,7 +26,7 @@ async function main() {
   console.log("Desktop launcher created:");
   console.log(`  ${launcherPath}`);
   console.log("");
-  console.log("Double-click it to open YC Downloader in your browser.");
+  console.log("Double-click it to open Cmate in your browser.");
   console.log("The server stops when you close the browser tab.");
 }
 

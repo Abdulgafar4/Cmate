@@ -1,11 +1,12 @@
 import type { FormatPresetId } from "./validators";
 
-// Rough size estimates from typical bitrates (not exact).
 const BITRATE_MB_PER_MIN: Record<FormatPresetId, number> = {
   best: 12,
   "1080p": 8,
   "720p": 4,
   audio: 1,
+  mp3: 1,
+  opus: 0.8,
 };
 
 export function estimateFileSize(

@@ -33,6 +33,16 @@ async function saveWithAnchor(blob: Blob, fileName: string): Promise<void> {
   }
 }
 
+function isMobileDevice(): boolean {
+  return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+}
+
+function openFileUrl(url: string): void {
+  if (!window.open(url, "_blank", "noopener")) {
+    window.location.assign(url);
+  }
+}
+
 export async function saveFileFromUrl(
   url: string,
   fallbackName: string,
@@ -93,6 +103,15 @@ export async function saveFileFromUrl(
     }
   }
 
-  await saveWithAnchor(blob, fileName);
+  try {
+    await saveWithAnchor(blob, fileName);
+  } catch (error) {
+    if (isMobileDevice()) {
+      openFileUrl(url);
+      return fileName;
+    }
+    throw error;
+  }
+
   return fileName;
 }

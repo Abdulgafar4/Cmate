@@ -130,7 +130,7 @@ async function main() {
     );
   }
 
-  log("Starting YC Downloader...");
+  log("Starting Cmate...");
   const child = spawn("npm", ["run", "dev"], {
     cwd: root,
     stdio: "inherit",
@@ -157,7 +157,7 @@ async function main() {
 
   await openBrowser();
   log("");
-  log(`YC Downloader is open at ${downloadUrl}`);
+  log(`Cmate is open at ${downloadUrl}`);
   log("Close the browser tab or window to stop the app.");
   log("");
 
@@ -181,7 +181,7 @@ async function main() {
         Date.now() - status.lastHeartbeat >= IDLE_AFTER_CLOSE_MS
       ) {
         clearInterval(interval);
-        log("Browser closed. Stopping YC Downloader...");
+        log("Browser closed. Stopping Cmate...");
         stopChild();
         resolve();
       }

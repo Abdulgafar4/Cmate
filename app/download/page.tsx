@@ -4,7 +4,7 @@ import { Downloader } from "@/components/Downloader";
 export const metadata: Metadata = {
   title: "Download",
   description:
-    "Paste a YouTube link, pick a quality, and save videos locally with YC Downloader.",
+    "Paste a YouTube link, pick a quality, and save videos to your device with Cmate.",
 };
 
 export default function DownloadPage() {

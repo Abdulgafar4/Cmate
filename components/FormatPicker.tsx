@@ -24,7 +24,7 @@ export function FormatPicker({
     <div className="space-y-3">
       <p className="text-sm font-medium text-foreground">Quality</p>
       <div
-        className="grid grid-cols-2 gap-2 sm:grid-cols-4"
+        className="grid grid-cols-2 gap-2 sm:grid-cols-3"
         role="radiogroup"
         aria-label="Video quality"
       >

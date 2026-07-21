@@ -3,10 +3,11 @@ import {
   ArrowRight,
   Clock3,
   Download,
-  HardDrive,
+  FileText,
   Link2,
   ListMusic,
   MonitorSmartphone,
+  Shield,
   Sparkles,
   Subtitles,
   Zap,
@@ -15,15 +16,15 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: {
-    absolute: "YC Downloader — Save YouTube Videos Locally",
+    absolute: "Cmate — Download YouTube Videos",
   },
   description:
-    "YC Downloader is a local-first YouTube downloader. Paste a link, pick a quality, and save videos to your device with yt-dlp and FFmpeg.",
+    "Cmate makes it easy to download public YouTube videos. Paste a link, pick a quality, and save to your device.",
   openGraph: {
-    title: "YC Downloader — Save YouTube Videos Locally",
+    title: "Cmate — Download YouTube Videos",
     description:
-      "A simple, local-first app to download public YouTube videos to your device.",
-    siteName: "YC Downloader",
+      "Paste a YouTube link, pick a quality, and save videos to your device.",
+    siteName: "Cmate",
     type: "website",
   },
 };
@@ -40,14 +41,14 @@ const STEPS = [
       "See the thumbnail, title, and duration. Choose Best, 1080p, 720p, or audio-only.",
   },
   {
-    title: "Download on your machine",
+    title: "Start the download",
     description:
-      "YC Downloader runs yt-dlp and FFmpeg on your computer — not in the cloud.",
+      "Cmate fetches and prepares the file for you — watch live progress as it runs.",
   },
   {
     title: "Save to your device",
     description:
-      "When the download finishes, save the file with the video title as the filename.",
+      "When it finishes, save the file with the video title as the filename.",
   },
 ] as const;
 
@@ -68,32 +69,32 @@ const CURRENT_FEATURES = [
     description: "Track percent complete, speed, downloaded size, and ETA.",
   },
   {
-    icon: HardDrive,
-    title: "Local-first",
-    description: "Files are processed on your machine and saved to your device.",
+    icon: FileText,
+    title: "Friendly filenames",
+    description: "Saved files use the video title — not a random ID.",
   },
 ] as const;
 
 const FUTURE_FEATURES = [
   {
     icon: ListMusic,
-    title: "Playlists & channels",
-    description: "Queue multiple videos from a playlist or channel in one go.",
+    title: "Playlists & batch queue",
+    description: "Select multiple videos from a playlist and queue them together.",
   },
   {
     icon: Subtitles,
-    title: "Subtitles & captions",
-    description: "Download SRT or VTT files alongside the video.",
+    title: "Subtitles, trim & share",
+    description: "SRT captions, start/end clips, and shareable download links.",
   },
   {
     icon: MonitorSmartphone,
-    title: "Better mobile flow",
-    description: "Improved save experience on phones and tablets.",
+    title: "Dark mode & mobile save",
+    description: "Theme toggle and improved save flow on phones.",
   },
   {
     icon: Sparkles,
-    title: "More formats",
-    description: "Additional audio codecs, custom naming, and output folders.",
+    title: "More audio formats",
+    description: "M4A, MP3, and Opus plus custom filename templates.",
   },
 ] as const;
 
@@ -104,15 +105,15 @@ export default function HomePage() {
         <div className="mx-auto max-w-5xl px-4 py-14 sm:px-6 sm:py-20">
           <div className="max-w-2xl">
             <p className="mb-3 text-sm font-medium text-primary">
-              Local-first YouTube downloader
+              Simple YouTube downloader
             </p>
             <h1 className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
               Save YouTube videos to your device, simply.
             </h1>
             <p className="mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg">
-              YC Downloader helps you download public YouTube videos for personal,
+              Cmate helps you download public YouTube videos for personal,
               offline use. Paste a link, choose a quality, and save the file —
-              powered by yt-dlp and FFmpeg running on your computer.
+              fast, clear, and ready when you are.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Link
@@ -136,7 +137,7 @@ export default function HomePage() {
 
       <section id="how-it-works" className="mx-auto w-full max-w-5xl px-4 py-14 sm:px-6">
         <div className="mb-8 max-w-2xl">
-          <h2 className="text-2xl font-bold tracking-tight">How to use YC Downloader</h2>
+          <h2 className="text-2xl font-bold tracking-tight">How to use Cmate</h2>
           <p className="mt-2 text-sm text-muted-foreground sm:text-base">
             Four steps from link to saved file. No account required.
           </p>
@@ -163,8 +164,8 @@ export default function HomePage() {
               What you can do today
             </h2>
             <p className="mt-2 text-sm text-muted-foreground sm:text-base">
-              YC Downloader is built for straightforward, one-video downloads with clear
-              progress and friendly filenames.
+              Built for straightforward, one-video downloads with clear progress
+              and friendly filenames.
             </p>
           </div>
           <ul className="grid gap-4 sm:grid-cols-2">
@@ -190,10 +191,9 @@ export default function HomePage() {
 
       <section className="mx-auto w-full max-w-5xl px-4 py-14 sm:px-6">
         <div className="mb-8 max-w-2xl">
-          <h2 className="text-2xl font-bold tracking-tight">Coming soon</h2>
+          <h2 className="text-2xl font-bold tracking-tight">Built-in capabilities</h2>
           <p className="mt-2 text-sm text-muted-foreground sm:text-base">
-            Planned improvements for future releases. Order may change as we
-            ship.
+            Extra tools beyond the basic download flow.
           </p>
         </div>
         <ul className="grid gap-4 sm:grid-cols-2">
@@ -223,6 +223,9 @@ export default function HomePage() {
 
       <section className="border-t border-border">
         <div className="mx-auto max-w-5xl px-4 py-12 text-center sm:px-6">
+          <div className="mx-auto mb-4 flex size-10 items-center justify-center rounded-full bg-primary/10 text-primary">
+            <Shield className="size-5" />
+          </div>
           <h2 className="text-xl font-bold tracking-tight sm:text-2xl">
             Ready to download?
           </h2>

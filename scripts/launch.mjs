@@ -104,7 +104,7 @@ async function notifyStarted() {
     return;
   }
 
-  const script = `display notification "YC Downloader is ready in your browser." with title "YC Downloader"`;
+  const script = `display notification "Cmate is ready in your browser." with title "Cmate"`;
   await execFileAsync("osascript", ["-e", script]).catch(() => {});
 }
 
@@ -120,7 +120,7 @@ async function main() {
   await runDepCheck();
 
   if (await isServerUp()) {
-    log("YC Downloader is already running.");
+    log("Cmate is already running.");
     await openBrowser();
     await notifyStarted();
     return;
@@ -137,7 +137,7 @@ async function main() {
     }
   }
 
-  log("Starting YC Downloader...");
+  log("Starting Cmate...");
   await startServer();
 
   const ready = await waitForServer();
@@ -151,7 +151,7 @@ async function main() {
   await notifyStarted();
 
   log("");
-  log("YC Downloader is running.");
+  log("Cmate is running.");
   log(`  ${downloadUrl}`);
   log("");
   log("To stop it later, run:");

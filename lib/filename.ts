@@ -1,19 +1,42 @@
 import path from "path";
+import { sanitizeFilename as sanitize } from "./filenameSanitize";
 
-export function sanitizeFilename(title: string): string {
-  return (
-    title
-      .replace(/[<>:"/\\|?*\x00-\x1f]/g, "")
-      .replace(/\.+$/g, "")
-      .replace(/\s+/g, " ")
-      .trim()
-      .slice(0, 150) || "download"
-  );
+export { sanitize as sanitizeFilename };
+
+export function applyFilenameTemplate(
+  template: string | undefined,
+  parts: { title: string; channel?: string; id?: string },
+): string {
+  const title = parts.title || "download";
+  if (!template?.trim()) {
+    return sanitize(title);
+  }
+
+  const rendered = template
+    .replaceAll("{title}", parts.title || "download")
+    .replaceAll("{channel}", parts.channel || "unknown")
+    .replaceAll("{id}", parts.id || "")
+    .trim();
+
+  return sanitize(rendered || title);
 }
 
-export function buildDownloadFilename(title: string, filePath: string): string {
+export function buildDownloadFilename(
+  title: string,
+  filePath: string,
+  options?: {
+    template?: string;
+    channel?: string;
+    id?: string;
+  },
+): string {
   const ext = path.extname(filePath).replace(/^\./, "") || "mp4";
-  return `${sanitizeFilename(title)}.${ext}`;
+  const base = applyFilenameTemplate(options?.template, {
+    title,
+    channel: options?.channel,
+    id: options?.id,
+  });
+  return `${base}.${ext}`;
 }
 
 export function contentDispositionHeader(filename: string): string {

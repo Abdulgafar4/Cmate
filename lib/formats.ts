@@ -28,9 +28,21 @@ export const FORMAT_OPTIONS: FormatOption[] = [
   },
   {
     id: "audio",
-    label: "Audio",
+    label: "M4A",
     description: "Audio track only (M4A)",
-    badge: "Smallest",
+    badge: "Audio",
+  },
+  {
+    id: "mp3",
+    label: "MP3",
+    description: "Audio converted to MP3",
+    badge: "Audio",
+  },
+  {
+    id: "opus",
+    label: "Opus",
+    description: "Efficient audio (Opus)",
+    badge: "Audio",
   },
 ];
 
@@ -41,6 +53,8 @@ const FORMAT_SPECS: Record<FormatPresetId, string> = {
   "720p":
     "best[height<=720][ext=mp4]/bestvideo[height<=720]+bestaudio/best[height<=720]",
   audio: "bestaudio[ext=m4a]/bestaudio/best",
+  mp3: "bestaudio/best",
+  opus: "bestaudio/best",
 };
 
 export function getFormatSpec(formatId: FormatPresetId): string {
@@ -48,5 +62,5 @@ export function getFormatSpec(formatId: FormatPresetId): string {
 }
 
 export function isAudioOnly(formatId: FormatPresetId): boolean {
-  return formatId === "audio";
+  return formatId === "audio" || formatId === "mp3" || formatId === "opus";
 }

@@ -68,8 +68,13 @@ export async function findJobOutputFile(
 export async function deleteJobArtifacts(
   outputDir: string,
   jobId: string,
-  keepFilePath?: string,
+  keepFilePaths: string | string[] = [],
 ): Promise<void> {
+  const keep = new Set(
+    (Array.isArray(keepFilePaths) ? keepFilePaths : [keepFilePaths]).filter(
+      Boolean,
+    ),
+  );
   const entries = await readdir(outputDir);
 
   await Promise.all(
@@ -77,7 +82,7 @@ export async function deleteJobArtifacts(
       .filter((entry) => entry.startsWith(jobId))
       .map(async (entry) => {
         const filePath = path.join(outputDir, entry);
-        if (keepFilePath && filePath === keepFilePath) {
+        if (keep.has(filePath)) {
           return;
         }
         await deleteFile(filePath);

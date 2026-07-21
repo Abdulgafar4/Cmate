@@ -47,6 +47,9 @@ export async function loadConfig() {
     httpChunkSize: process.env.YT_DLP_HTTP_CHUNK_SIZE ?? "10M",
     bufferSize: process.env.YT_DLP_BUFFER_SIZE ?? "128K",
     cookiesFile: process.env.YT_DLP_COOKIES_FILE,
+    rateLimitPerHour: Number(process.env.RATE_LIMIT_PER_HOUR ?? "30"),
+    adminKey: process.env.ADMIN_KEY,
+    discordWebhookUrl: process.env.DISCORD_WEBHOOK_URL,
   };
 }
 

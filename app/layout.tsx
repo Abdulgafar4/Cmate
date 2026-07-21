@@ -15,23 +15,23 @@ export const metadata: Metadata = {
     process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:9090",
   ),
   title: {
-    default: "YC Downloader",
-    template: "%s — YC Downloader",
+    default: "Cmate",
+    template: "%s — Cmate",
   },
   description:
-    "Download YouTube videos locally with yt-dlp and FFmpeg. Local-first, simple, and fast.",
+    "Download public YouTube videos easily. Paste a link, pick a quality, and save to your device.",
   openGraph: {
-    title: "YC Downloader",
+    title: "Cmate",
     description:
-      "Paste a YouTube link, pick a quality, and save videos locally.",
-    siteName: "YC Downloader",
+      "Paste a YouTube link, pick a quality, and save videos to your device.",
+    siteName: "Cmate",
     type: "website",
   },
   twitter: {
     card: "summary",
-    title: "YC Downloader",
+    title: "Cmate",
     description:
-      "Paste a YouTube link, pick a quality, and save videos locally.",
+      "Paste a YouTube link, pick a quality, and save videos to your device.",
   },
 };
 
@@ -41,7 +41,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${roboto.variable} h-full`}>
+    <html lang="en" className={`${roboto.variable} h-full`} suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('cmate-theme');if(t==='dark'||(t!=='light'&&window.matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark')}}catch(e){}})();`,
+          }}
+        />
+      </head>
       <body className="flex min-h-full flex-col font-sans">
         <LauncherHeartbeat />
         <NavBar />

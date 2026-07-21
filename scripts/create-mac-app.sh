@@ -2,7 +2,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-APP_NAME="YC Downloader"
+APP_NAME="Cmate"
 APP_DIR="$ROOT/dist/${APP_NAME}.app"
 CONTENTS="$APP_DIR/Contents"
 MACOS="$CONTENTS/MacOS"
@@ -30,7 +30,7 @@ cat > "$CONTENTS/Info.plist" <<EOF
   <key>CFBundleExecutable</key>
   <string>launch</string>
   <key>CFBundleIdentifier</key>
-  <string>com.yc.downloader</string>
+  <string>com.cmate.app</string>
   <key>CFBundleInfoDictionaryVersion</key>
   <string>6.0</string>
   <key>CFBundleName</key>

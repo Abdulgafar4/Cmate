@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "YC Downloader";
+export const alt = "Cmate — YouTube Downloader";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -30,14 +30,14 @@ export default function OpenGraphImage() {
             color: "#0F0F0F",
           }}
         >
-          <span style={{ color: "#FF0000" }}>YC</span>
+          <span style={{ color: "#FF0000" }}>C</span>
           <svg viewBox="0 0 24 24" width="36" height="36" fill="#FF0000">
             <path d="M8 5v14l11-7z" />
           </svg>
-          <span>Downloader</span>
+          <span>mate</span>
         </div>
         <p style={{ fontSize: 28, color: "#606060" }}>
-          Save YouTube videos locally
+          Download YouTube videos simply
         </p>
       </div>
     ),

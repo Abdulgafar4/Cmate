@@ -1,30 +1,23 @@
 import { NextResponse } from "next/server";
-import { createJob } from "@/lib/jobs";
+import { createJobs } from "@/lib/jobs";
 import { checkRateLimit, getClientIp } from "@/lib/rateLimit";
-import { downloadSchema } from "@/lib/validators";
+import { batchDownloadSchema } from "@/lib/validators";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
   try {
-    const rate = checkRateLimit(`download:${getClientIp(request)}`);
+    const rate = checkRateLimit(`batch:${getClientIp(request)}`, 10);
     if (!rate.ok) {
       return NextResponse.json(
         { error: "Rate limit exceeded. Try again later." },
-        {
-          status: 429,
-          headers: {
-            "X-RateLimit-Remaining": "0",
-            "X-RateLimit-Reset": String(rate.resetAt),
-          },
-        },
+        { status: 429 },
       );
     }
 
     const body = await request.json();
-    const parsed = downloadSchema.safeParse(body);
-
+    const parsed = batchDownloadSchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json(
         { error: parsed.error.issues[0]?.message ?? "Invalid request" },
@@ -36,23 +29,25 @@ export async function POST(request: Request) {
       request.headers.get("x-access-key") ??
       request.headers.get("cookie")?.match(/yc_access_key=([^;]+)/)?.[1];
 
-    const job = createJob(
-      parsed.data.url,
-      parsed.data.formatId,
-      parsed.data.title,
-      parsed.data.options ?? {},
-      {
-        channel: parsed.data.options?.channel,
-        ownerKey: ownerKey ?? undefined,
-      },
+    const jobs = createJobs(
+      parsed.data.items.map((item) => ({
+        url: item.url,
+        formatId: item.formatId,
+        title: item.title,
+        options: item.options,
+        channel: item.options?.channel,
+      })),
+      ownerKey ?? undefined,
     );
 
-    return NextResponse.json({ jobId: job.id });
+    return NextResponse.json({
+      jobIds: jobs.map((job) => job.id),
+    });
   } catch (error) {
     return NextResponse.json(
       {
         error:
-          error instanceof Error ? error.message : "Failed to start download",
+          error instanceof Error ? error.message : "Failed to start batch",
       },
       { status: 500 },
     );

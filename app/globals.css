@@ -86,6 +86,42 @@
   --chart-5: #909090;
 }
 
+.dark {
+  color-scheme: dark;
+  --background: #0f0f0f;
+  --foreground: #f1f1f1;
+  --card: #212121;
+  --card-foreground: #f1f1f1;
+  --popover: #212121;
+  --popover-foreground: #f1f1f1;
+  --primary: #ff0000;
+  --primary-foreground: #ffffff;
+  --secondary: #272727;
+  --secondary-foreground: #f1f1f1;
+  --muted: #272727;
+  --muted-foreground: #aaaaaa;
+  --accent: #3a1515;
+  --accent-foreground: #ff8a8a;
+  --destructive: #ff4444;
+  --border: #303030;
+  --input: #121212;
+  --ring: rgba(255, 0, 0, 0.35);
+  --yt-red: #ff0000;
+  --sidebar: #212121;
+  --sidebar-foreground: #f1f1f1;
+  --sidebar-primary: #ff0000;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #272727;
+  --sidebar-accent-foreground: #f1f1f1;
+  --sidebar-border: #303030;
+  --sidebar-ring: rgba(255, 0, 0, 0.35);
+  --chart-1: #ff0000;
+  --chart-2: #aaaaaa;
+  --chart-3: #f1f1f1;
+  --chart-4: #606060;
+  --chart-5: #909090;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -93,7 +129,14 @@
 
   html {
     @apply font-sans antialiased;
+  }
+
+  html:not(.dark) {
     color-scheme: light;
+  }
+
+  html.dark {
+    color-scheme: dark;
   }
 
   body {

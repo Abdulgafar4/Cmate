@@ -20,7 +20,7 @@ const SIZE_STYLES = {
     nudge: "-mx-px",
   },
   md: {
-    text: "text-sm sm:text-base",
+    text: "text-base",
     play: "size-3",
     gap: "gap-0.5",
     nudge: "-mx-0.5",
@@ -49,9 +49,9 @@ export function BrandWordmark({ className, size = "md" }: BrandWordmarkProps) {
         styles.gap,
         className,
       )}
-      aria-label="YC Downloader"
+      aria-label="Cmate"
     >
-      <span className="text-primary">YC</span>
+      <span className="text-primary">C</span>
       <span
         className={cn(
           "inline-flex items-center justify-center text-primary",
@@ -61,7 +61,7 @@ export function BrandWordmark({ className, size = "md" }: BrandWordmarkProps) {
       >
         <PlayGlyph className={styles.play} />
       </span>
-      <span>Downloader</span>
+      <span>mate</span>
     </span>
   );
 }

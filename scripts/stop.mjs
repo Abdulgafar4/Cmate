@@ -70,7 +70,7 @@ async function main() {
     await unlink(nextDevLock).catch(() => {});
   }
 
-  console.log("YC Downloader stopped.");
+  console.log("Cmate stopped.");
 }
 
 main().catch((error) => {
