@@ -114,12 +114,15 @@
 
   html {
     @apply antialiased;
+    overflow-x: clip;
   }
 
   body {
     background: var(--paper);
     color: var(--ink);
     font-family: var(--font-body), system-ui, sans-serif;
+    overflow-x: clip;
+    padding-bottom: env(safe-area-inset-bottom);
   }
 
   h1,
@@ -170,9 +173,19 @@
       1px 1px 0 var(--line),
       2px 2px 0 var(--line),
       3px 3px 0 var(--line),
-      4px 4px 0 var(--line),
-      5px 5px 0 var(--line),
-      6px 6px 0 var(--line);
+      4px 4px 0 var(--line);
+  }
+
+  @media (min-width: 640px) {
+    .tf-display-shadow {
+      text-shadow:
+        1px 1px 0 var(--line),
+        2px 2px 0 var(--line),
+        3px 3px 0 var(--line),
+        4px 4px 0 var(--line),
+        5px 5px 0 var(--line),
+        6px 6px 0 var(--line);
+    }
   }
 
   .tf-display-shadow-accent {
@@ -180,15 +193,33 @@
       1px 1px 0 var(--accent-soft),
       2px 2px 0 var(--accent-soft),
       3px 3px 0 var(--accent-soft),
-      4px 4px 0 var(--accent-soft),
-      5px 5px 0 var(--accent-soft),
-      6px 6px 0 var(--accent-soft),
-      7px 7px 0 var(--accent-soft),
-      8px 8px 0 var(--accent-soft),
-      9px 9px 0 var(--accent-soft),
-      10px 10px 0 var(--accent-soft),
-      11px 11px 0 var(--accent-soft),
-      12px 12px 0 var(--accent-soft);
+      4px 4px 0 var(--accent-soft);
+  }
+
+  @media (min-width: 640px) {
+    .tf-display-shadow-accent {
+      text-shadow:
+        1px 1px 0 var(--accent-soft),
+        2px 2px 0 var(--accent-soft),
+        3px 3px 0 var(--accent-soft),
+        4px 4px 0 var(--accent-soft),
+        5px 5px 0 var(--accent-soft),
+        6px 6px 0 var(--accent-soft),
+        7px 7px 0 var(--accent-soft),
+        8px 8px 0 var(--accent-soft),
+        9px 9px 0 var(--accent-soft),
+        10px 10px 0 var(--accent-soft),
+        11px 11px 0 var(--accent-soft),
+        12px 12px 0 var(--accent-soft);
+    }
+  }
+
+  .tf-safe-pb {
+    padding-bottom: calc(5.5rem + env(safe-area-inset-bottom));
+  }
+
+  .tf-bottom-bar {
+    padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
   }
 
   .tf-grid-fade {

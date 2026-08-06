@@ -180,7 +180,7 @@ function ChoiceRow({
               key={c}
               type="button"
               onClick={() => onChange(c)}
-              className="rounded-full border px-3.5 py-1.5 text-[12.5px] font-medium transition-colors"
+              className="rounded-full border px-3.5 py-2.5 text-[13px] font-medium transition-colors sm:py-1.5 sm:text-[12.5px]"
               style={{ borderColor: p.bd, background: p.bg, color: p.fg }}
             >
               {c}
@@ -835,7 +835,7 @@ export function ToolWorkspace({ tool }: { tool: Tool }) {
   }
 
   return (
-    <main className="animate-tf-fade relative z-1 pb-28">
+    <main className="animate-tf-fade relative z-1 tf-safe-pb">
       <ToolChrome
         tool={tool}
         depsReady={tool.binary}
@@ -843,12 +843,12 @@ export function ToolWorkspace({ tool }: { tool: Tool }) {
         prep={100}
       />
 
-      <div className="mx-auto max-w-[1240px] px-5 md:px-7">
-        <div className="mb-5 flex gap-5 overflow-x-auto border-b border-[var(--line)]">
+      <div className="mx-auto max-w-[1240px] px-4 sm:px-5 md:px-7">
+        <div className="mb-5 flex gap-4 overflow-x-auto border-b border-[var(--line)] [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {stepNames.map((label, i) => (
             <div
               key={label}
-              className="relative flex items-center gap-2 pb-3 text-[13px]"
+              className="relative flex shrink-0 items-center gap-2 pb-3 text-[13px]"
               style={{ color: i <= cur ? "var(--ink)" : "var(--muted)" }}
             >
               <span
@@ -884,7 +884,9 @@ export function ToolWorkspace({ tool }: { tool: Tool }) {
         <div
           className={cn(
             "grid gap-4",
-            aside ? "lg:grid-cols-[minmax(0,1fr)_320px]" : "grid-cols-1",
+            aside
+              ? "lg:grid-cols-[minmax(0,1fr)_300px] xl:grid-cols-[minmax(0,1fr)_320px]"
+              : "grid-cols-1",
           )}
         >
           <div className="flex flex-col gap-3.5">
@@ -1092,7 +1094,14 @@ export function ToolWorkspace({ tool }: { tool: Tool }) {
           </div>
 
           {aside ? (
-            <aside className="h-fit rounded-[22px] border border-[var(--line)] bg-[var(--surface)] p-4 tf-shadow">
+            <aside
+              className={cn(
+                "h-fit rounded-[22px] border border-[var(--line)] bg-[var(--surface)] p-4 tf-shadow",
+                isUrlTool
+                  ? "hidden lg:block"
+                  : "order-first lg:order-none",
+              )}
+            >
               <div className="mb-3 text-[13px] font-semibold">{aside.title}</div>
               <div
                 className="relative mb-3 overflow-hidden rounded-[12px] border border-[var(--line2)] bg-[var(--paper)]"
@@ -1166,7 +1175,7 @@ export function ToolWorkspace({ tool }: { tool: Tool }) {
         </div>
       </div>
 
-      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-[var(--line)] bg-[color-mix(in_oklab,var(--paper)_92%,transparent)] backdrop-blur-md">
+      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-[var(--line)] bg-[color-mix(in_oklab,var(--paper)_92%,transparent)] backdrop-blur-md tf-bottom-bar">
         {job === "running" || job === "done" ? (
           <div className="h-[3px] bg-[var(--line)]">
             <div
@@ -1175,10 +1184,10 @@ export function ToolWorkspace({ tool }: { tool: Tool }) {
             />
           </div>
         ) : null}
-        <div className="mx-auto flex max-w-[1240px] items-center gap-3 px-5 py-3 md:px-7">
-          <div className="min-w-0 flex-1">
+        <div className="mx-auto flex max-w-[1240px] items-center gap-2 px-4 py-3 sm:gap-3 sm:px-5 md:px-7">
+          <div className="min-w-0 flex-1 overflow-hidden">
             {job === "idle" || job === "error" ? (
-              <span className="text-[13.5px] text-[var(--muted)]">
+              <span className="block truncate text-[13px] text-[var(--muted)] sm:text-[13.5px]">
                 {infoLoading ? "Fetching info…" : "Ready when you are"}
               </span>
             ) : null}
@@ -1191,8 +1200,8 @@ export function ToolWorkspace({ tool }: { tool: Tool }) {
               </span>
             ) : null}
             {job === "done" ? (
-              <span className="flex items-center gap-2 text-[13.5px] font-medium">
-                <span className="animate-tf-pop grid size-5 place-items-center rounded-full bg-[var(--ok)]">
+              <span className="flex min-w-0 items-center gap-2 text-[13px] font-medium sm:text-[13.5px]">
+                <span className="animate-tf-pop grid size-5 shrink-0 place-items-center rounded-full bg-[var(--ok)]">
                   <svg
                     width="11"
                     height="11"
@@ -1204,11 +1213,13 @@ export function ToolWorkspace({ tool }: { tool: Tool }) {
                     <polyline points="5 12 10 17 19 7" />
                   </svg>
                 </span>
-                {resultName
-                  ? `${resultName} ready`
-                  : resultText
-                    ? "Result ready"
-                    : "Result ready · shareable for 1 hour"}
+                <span className="truncate">
+                  {resultName
+                    ? `${resultName} ready`
+                    : resultText
+                      ? "Result ready"
+                      : "Result ready · shareable for 1 hour"}
+                </span>
               </span>
             ) : null}
           </div>
@@ -1216,7 +1227,7 @@ export function ToolWorkspace({ tool }: { tool: Tool }) {
             <button
               type="button"
               onClick={() => void cancelJob()}
-              className="h-10 rounded-full border border-[var(--line2)] bg-[var(--surface)] px-[18px] text-[13.5px]"
+              className="h-11 shrink-0 rounded-full border border-[var(--line2)] bg-[var(--surface)] px-4 text-[13.5px] sm:px-[18px]"
             >
               Cancel
             </button>
@@ -1225,7 +1236,7 @@ export function ToolWorkspace({ tool }: { tool: Tool }) {
             type="button"
             onClick={primaryAction}
             disabled={job === "running" || infoLoading}
-            className="h-10 rounded-full border border-[var(--ink)] px-[22px] text-[14px] font-medium transition-transform active:scale-[0.97] disabled:opacity-60"
+            className="h-11 shrink-0 rounded-full border border-[var(--ink)] px-4 text-[14px] font-medium transition-transform active:scale-[0.97] disabled:opacity-60 sm:px-[22px]"
             style={{
               background: "var(--ink)",
               color: "var(--paper)",
@@ -1251,10 +1262,10 @@ function ToolChrome({
   prep: number;
 }) {
   return (
-    <div className="mx-auto mb-5 flex max-w-[1240px] flex-wrap items-center gap-3 px-5 pt-8 md:px-7">
+    <div className="mx-auto mb-5 flex max-w-[1240px] flex-wrap items-center gap-3 px-4 pt-6 sm:px-5 sm:pt-8 md:px-7">
       <Link
         href="/tools"
-        className="grid size-9 place-items-center rounded-[9px] border border-[var(--line2)] bg-[var(--surface)] text-[var(--ink2)] hover:text-[var(--ink)]"
+        className="grid size-11 place-items-center rounded-[9px] border border-[var(--line2)] bg-[var(--surface)] text-[var(--ink2)] hover:text-[var(--ink)]"
         aria-label="Back to tools"
       >
         ←
@@ -1405,7 +1416,7 @@ function UrlPanel({
 
       {infoLoading ? (
         <div
-          className="mt-4 overflow-hidden rounded-[14px] border border-[var(--line)]"
+          className="mt-4 overflow-hidden rounded-[14px] border border-[var(--line)] lg:hidden"
           aria-busy="true"
           aria-label="Loading preview"
         >
@@ -1418,7 +1429,7 @@ function UrlPanel({
       ) : null}
 
       {!infoLoading && videoInfo?.title ? (
-        <div className="mt-4 overflow-hidden rounded-[14px] border border-[var(--line)] bg-[var(--paper)]">
+        <div className="mt-4 overflow-hidden rounded-[14px] border border-[var(--line)] bg-[var(--paper)] lg:hidden">
           {videoInfo.thumbnail ? (
             <div className="relative aspect-video w-full bg-[var(--paper2)]">
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -1562,7 +1573,7 @@ function UploadPanel({
 
       {files.length > 0 ? (
         <div className="mt-4 flex flex-col gap-2">
-          <div className="flex justify-between text-[12.5px] text-[var(--muted)]">
+          <div className="flex flex-col gap-1 text-[12.5px] text-[var(--muted)] sm:flex-row sm:justify-between sm:gap-3">
             <span>
               {files.length} {files.length === 1 ? "file" : "files"} · ready to
               process
@@ -1576,7 +1587,7 @@ function UploadPanel({
           {files.map((f, i) => (
             <div
               key={`${f.name}-${f.size}-${i}`}
-              className="flex items-center gap-3 rounded-[12px] border border-[var(--line)] px-3 py-2.5"
+              className="flex items-center gap-3 rounded-[12px] border border-[var(--line)] px-3 py-3"
             >
               <span className="font-mono text-[11px] text-[var(--muted)]">
                 {String(i + 1).padStart(2, "0")}
@@ -1591,7 +1602,7 @@ function UploadPanel({
               </span>
               <button
                 type="button"
-                className="text-[12px] text-[var(--muted)]"
+                className="min-h-10 shrink-0 px-2 text-[13px] text-[var(--muted)] hover:text-[var(--ink)]"
                 onClick={(e) => {
                   e.stopPropagation();
                   setFiles((prev) => prev.filter((_, j) => j !== i));

@@ -106,25 +106,25 @@ export function HomePage() {
 
   return (
     <main className="animate-tf-fade relative z-1">
-      <section className="relative z-5 px-6 pb-[60px] pt-24 sm:pt-28 md:pt-32">
+      <section className="relative z-5 overflow-x-clip px-4 pb-14 pt-16 sm:px-6 sm:pb-[60px] sm:pt-28 md:pt-32">
         <div className="relative mx-auto flex w-full max-w-[1120px] flex-col items-center text-center">
-          <div className="relative z-10 flex w-full flex-col items-center gap-1.5">
-            <div className="relative z-30 flex w-full justify-start pl-[8%] sm:pl-[22%]">
-              <h1 className="animate-tf-rise m-0 font-display text-[clamp(2.4rem,8.6vw,124px)] font-extrabold uppercase leading-[0.84] tracking-[-0.05em] text-[var(--accent)] tf-display-shadow-accent">
+          <div className="relative z-10 flex w-full flex-col items-center gap-1 sm:gap-1.5">
+            <div className="relative z-30 flex w-full justify-center sm:justify-start sm:pl-[22%]">
+              <h1 className="animate-tf-rise m-0 max-w-full font-display text-[clamp(2rem,9vw,124px)] font-extrabold uppercase leading-[0.9] tracking-[-0.04em] text-[var(--accent)] tf-display-shadow-accent sm:leading-[0.84] sm:tracking-[-0.05em]">
                 {TOOLS.length} tools
               </h1>
             </div>
             <div className="relative z-20 flex w-full justify-center">
               <h1
-                className="animate-tf-rise m-0 font-display text-[clamp(2.8rem,11.4vw,168px)] font-extrabold uppercase leading-[0.84] tracking-[-0.05em] text-[var(--ink)] tf-display-shadow"
+                className="animate-tf-rise m-0 max-w-full font-display text-[clamp(2.35rem,11vw,168px)] font-extrabold uppercase leading-[0.9] tracking-[-0.04em] text-[var(--ink)] tf-display-shadow sm:leading-[0.84] sm:tracking-[-0.05em]"
                 style={{ animationDelay: "60ms" }}
               >
                 Toolferry
               </h1>
             </div>
-            <div className="relative z-10 flex w-full justify-start pl-[12%] sm:pl-[28%]">
+            <div className="relative z-10 flex w-full justify-center sm:justify-start sm:pl-[28%]">
               <h1
-                className="animate-tf-rise m-0 font-display text-[clamp(2.4rem,8.6vw,124px)] font-extrabold uppercase leading-[0.84] tracking-[-0.05em] text-[var(--ink)] tf-display-shadow"
+                className="animate-tf-rise m-0 max-w-full font-display text-[clamp(2rem,9vw,124px)] font-extrabold uppercase leading-[0.9] tracking-[-0.04em] text-[var(--ink)] tf-display-shadow sm:leading-[0.84] sm:tracking-[-0.05em]"
                 style={{ animationDelay: "120ms" }}
               >
                 One shell
@@ -251,28 +251,28 @@ export function HomePage() {
         </div>
 
         <div
-          className="animate-tf-rise relative z-15 mt-[100px] flex flex-col items-center gap-5 sm:mt-[132px]"
+          className="animate-tf-rise relative z-15 mt-10 flex flex-col items-center gap-5 sm:mt-[132px]"
           style={{ animationDelay: "200ms" }}
         >
-          <p className="m-0 max-w-[44ch] text-pretty text-center text-[19px] leading-[1.45] text-[var(--ink2)]">
+          <p className="m-0 max-w-[44ch] px-1 text-pretty text-center text-[16px] leading-[1.5] text-[var(--ink2)] sm:text-[19px] sm:leading-[1.45]">
             Downloaders, converters, PDF and document utilities — every tool in
             the same calm shell. Nothing to install, nothing kept.
           </p>
           <Link
             href="/tools"
-            className="flex h-[50px] items-center rounded-full border border-[var(--ink)] bg-[var(--ink)] px-[26px] text-[15px] font-medium text-[var(--paper)] transition-transform active:scale-[0.975]"
+            className="flex h-12 min-w-[180px] items-center justify-center rounded-full border border-[var(--ink)] bg-[var(--ink)] px-6 text-[15px] font-medium text-[var(--paper)] transition-transform active:scale-[0.975] sm:h-[50px] sm:px-[26px]"
           >
             Browse tools
           </Link>
         </div>
       </section>
 
-      <section className="mx-auto max-w-[1240px] px-5 pt-[72px] md:px-7 md:pt-[88px]">
-        <div className="grid grid-cols-1 items-start gap-10 md:grid-cols-[minmax(0,1fr)_minmax(0,2.1fr)] md:gap-14">
-          <h2 className="m-0 font-display text-[34px] font-extrabold uppercase leading-[1.02] tracking-[-0.035em]">
+      <section className="mx-auto max-w-[1240px] px-5 pt-14 md:px-7 md:pt-[88px]">
+        <div className="grid grid-cols-1 items-start gap-8 md:grid-cols-[minmax(0,1fr)_minmax(0,2.1fr)] md:gap-14">
+          <h2 className="m-0 font-display text-[28px] font-extrabold uppercase leading-[1.02] tracking-[-0.035em] sm:text-[34px]">
             What you can do
           </h2>
-          <div className="grid grid-cols-2 gap-6 border-t border-[var(--line)] pt-7 sm:grid-cols-4 sm:gap-7">
+          <div className="grid grid-cols-1 gap-5 border-t border-[var(--line)] pt-6 min-[420px]:grid-cols-2 sm:grid-cols-4 sm:gap-7 sm:pt-7">
             {blurbs.map((c) => (
               <div key={c.name} className="flex flex-col gap-2.5">
                 <div className="font-mono text-[11px] text-[var(--muted)]">
@@ -290,9 +290,9 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-[1240px] px-5 pt-16 pb-4 md:px-7 md:pt-20">
-        <div className="mb-[26px] flex items-baseline justify-between border-b border-[var(--line)] pb-3.5">
-          <h2 className="m-0 font-display text-[26px] font-extrabold uppercase tracking-[-0.03em]">
+      <section className="mx-auto max-w-[1240px] px-5 pt-14 pb-4 md:px-7 md:pt-20">
+        <div className="mb-[26px] flex flex-col gap-2 border-b border-[var(--line)] pb-3.5 sm:flex-row sm:items-baseline sm:justify-between">
+          <h2 className="m-0 font-display text-[22px] font-extrabold uppercase tracking-[-0.03em] sm:text-[26px]">
             Featured tools
           </h2>
           <Link href="/tools" className="text-[14px] text-[var(--accent)]">

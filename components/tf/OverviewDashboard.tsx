@@ -48,11 +48,11 @@ export function OverviewDashboard() {
   }, []);
 
   return (
-    <main className="animate-tf-fade relative z-1 mx-auto max-w-[1240px] px-5 py-10 pb-[90px] md:px-7">
-      <h1 className="m-0 font-display text-[clamp(2.2rem,4.4vw,52px)] font-extrabold uppercase tracking-[-0.045em] tf-display-shadow">
+    <main className="animate-tf-fade relative z-1 mx-auto max-w-[1240px] px-4 py-8 pb-16 sm:px-5 sm:py-10 md:px-7">
+      <h1 className="m-0 font-display text-[clamp(1.85rem,7vw,52px)] font-extrabold uppercase tracking-[-0.045em] tf-display-shadow">
         Overview
       </h1>
-      <p className="mt-2.5 mb-[26px] text-[15px] text-[var(--ink2)]">
+      <p className="mt-2.5 mb-6 text-[14px] text-[var(--ink2)] sm:mb-[26px] sm:text-[15px]">
         Live instance performance
         {data ? ` · ${data.toolCatalogSize} tools in catalogue` : ""}
         {loading ? " · refreshing…" : ""}
@@ -62,7 +62,7 @@ export function OverviewDashboard() {
         <p className="mb-4 text-[13.5px] text-[var(--warn)]">{error}</p>
       ) : null}
 
-      <div className="mb-[22px] grid grid-cols-2 gap-3.5 lg:grid-cols-4">
+      <div className="mb-5 grid grid-cols-1 gap-3 min-[420px]:grid-cols-2 lg:mb-[22px] lg:grid-cols-4 lg:gap-3.5">
         {(data?.stats ?? [
           { k: "JOBS · TRACKED", v: "—", note: "Loading" },
           { k: "QUEUE", v: "—", note: "Loading" },
@@ -71,12 +71,12 @@ export function OverviewDashboard() {
         ]).map((s) => (
           <div
             key={s.k}
-            className="flex flex-col gap-1.5 rounded-[22px] border border-[var(--line)] bg-[var(--surface)] px-5 py-[18px]"
+            className="flex flex-col gap-1.5 rounded-[22px] border border-[var(--line)] bg-[var(--surface)] px-4 py-4 sm:px-5 sm:py-[18px]"
           >
-            <span className="font-mono text-[10.5px] tracking-wider text-[var(--muted)]">
+            <span className="font-mono text-[10px] tracking-wider text-[var(--muted)] sm:text-[10.5px]">
               {s.k}
             </span>
-            <span className="font-display text-[32px] font-medium tracking-tight">
+            <span className="font-display text-[28px] font-medium tracking-tight sm:text-[32px]">
               {s.v}
             </span>
             <span className="text-[12.5px] text-[var(--ink2)]">{s.note}</span>

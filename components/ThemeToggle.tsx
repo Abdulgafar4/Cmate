@@ -104,7 +104,7 @@ export function ThemeToggle() {
       aria-label={
         theme === "dark" ? "Switch to light mode" : "Switch to dark mode"
       }
-      className="grid size-[34px] place-items-center rounded-[9px] border border-[var(--line2)] bg-[var(--surface)]"
+      className="grid size-11 place-items-center rounded-[9px] border border-[var(--line2)] bg-[var(--surface)]"
     >
       <span
         className="block size-[13px] rounded-full border-[1.5px] border-[var(--ink)]"

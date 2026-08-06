@@ -145,7 +145,7 @@ export function JobHistory() {
   const hasUnpinned = items.some((i) => !i.pinned);
 
   return (
-    <main className="animate-tf-fade relative z-1 mx-auto max-w-[1240px] px-5 py-10 pb-[90px] md:px-7">
+    <main className="animate-tf-fade relative z-1 mx-auto max-w-[1240px] px-4 py-8 pb-16 sm:px-5 sm:py-10 md:px-7">
       <div className="mb-[26px] flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h1 className="m-0 font-display text-[clamp(2.2rem,4.4vw,52px)] font-extrabold uppercase tracking-[-0.045em] tf-display-shadow">
@@ -224,32 +224,52 @@ export function JobHistory() {
             return (
               <div
                 key={`${j.jobId}-${j.createdAt}`}
-                className="grid grid-cols-1 gap-2 border-b border-[var(--line)] px-5 py-3.5 text-[13.5px] last:border-b-0 sm:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_100px_100px_88px] sm:items-center sm:gap-4"
+                className="grid grid-cols-1 gap-2.5 border-b border-[var(--line)] px-4 py-4 text-[13.5px] last:border-b-0 sm:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_100px_100px_88px] sm:items-center sm:gap-4 sm:px-5 sm:py-3.5"
               >
-                <span className="flex min-w-0 items-center gap-2">
-                  <span className="truncate font-medium" title={j.fileName}>
-                    {j.fileName || j.title}
+                <span className="flex min-w-0 flex-col gap-1 sm:block">
+                  <span className="font-mono text-[10px] tracking-wider text-[var(--muted)] sm:hidden">
+                    OUTPUT
                   </span>
-                  {pinned ? (
-                    <span
-                      className="shrink-0 rounded-[5px] border px-[7px] py-0.5 font-mono text-[10.5px]"
-                      style={{
-                        color: "var(--accent)",
-                        borderColor: "var(--accent)",
-                      }}
-                    >
-                      PINNED · {pinDaysLeft(j.pinnedUntil)}
+                  <span className="flex min-w-0 items-center gap-2">
+                    <span className="truncate font-medium" title={j.fileName}>
+                      {j.fileName || j.title}
                     </span>
-                  ) : null}
+                    {pinned ? (
+                      <span
+                        className="shrink-0 rounded-[5px] border px-[7px] py-0.5 font-mono text-[10.5px]"
+                        style={{
+                          color: "var(--accent)",
+                          borderColor: "var(--accent)",
+                        }}
+                      >
+                        PINNED · {pinDaysLeft(j.pinnedUntil)}
+                      </span>
+                    ) : null}
+                  </span>
                 </span>
-                <span className="truncate text-[var(--ink2)]" title={j.title}>
-                  {j.title}
+                <span className="flex min-w-0 flex-col gap-1 sm:block">
+                  <span className="font-mono text-[10px] tracking-wider text-[var(--muted)] sm:hidden">
+                    SOURCE
+                  </span>
+                  <span className="truncate text-[var(--ink2)]" title={j.title}>
+                    {j.title}
+                  </span>
                 </span>
-                <span className="font-mono text-[12px] text-[var(--ink2)]">
-                  {j.formatId}
+                <span className="flex items-center justify-between gap-3 sm:block">
+                  <span className="font-mono text-[10px] tracking-wider text-[var(--muted)] sm:hidden">
+                    FORMAT
+                  </span>
+                  <span className="font-mono text-[12px] text-[var(--ink2)]">
+                    {j.formatId}
+                  </span>
                 </span>
-                <span className="font-mono text-[12px] text-[var(--muted)]">
-                  {timeAgo(j.createdAt)}
+                <span className="flex items-center justify-between gap-3 sm:block">
+                  <span className="font-mono text-[10px] tracking-wider text-[var(--muted)] sm:hidden">
+                    WHEN
+                  </span>
+                  <span className="font-mono text-[12px] text-[var(--muted)]">
+                    {timeAgo(j.createdAt)}
+                  </span>
                 </span>
                 <button
                   type="button"
@@ -261,7 +281,7 @@ export function JobHistory() {
                       ? "Unpin — file follows normal 1-hour cleanup"
                       : "Pin — keep file for 7 days"
                   }
-                  className="justify-self-start rounded-full border px-3 py-1 text-[12px] font-medium transition-colors disabled:opacity-50"
+                  className="min-h-11 justify-self-start rounded-full border px-4 text-[13px] font-medium transition-colors disabled:opacity-50 sm:min-h-0 sm:px-3 sm:py-1.5 sm:text-[12px]"
                   style={
                     pinned
                       ? {
