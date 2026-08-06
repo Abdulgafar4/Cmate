@@ -7,6 +7,7 @@ import {
 import { TfHeader } from "@/components/tf/TfHeader";
 import { SlashFocus } from "@/components/tf/HomePage";
 import { LauncherHeartbeat } from "@/components/LauncherHeartbeat";
+import { getSiteUrl, OG_IMAGE } from "@/lib/siteUrl";
 import { TOOLS } from "@/lib/tools";
 import "./globals.css";
 
@@ -28,11 +29,13 @@ const mono = IBM_Plex_Mono({
   weight: ["400", "500"],
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:9090";
+const siteUrl = getSiteUrl();
 const siteName = "ToolFerry";
 const tagline = `${TOOLS.length} tools, one calm shell`;
 const description =
   "ToolFerry is a self-hosted toolbox for social downloads, media conversion, PDF work, documents, and everyday utilities — one shell, nothing to install, files that expire.";
+const shortDescription =
+  "Downloaders, converters, PDF and document utilities in one self-hosted shell.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -76,12 +79,13 @@ export const metadata: Metadata = {
     siteName,
     title: `${siteName} — ${tagline}`,
     description,
+    images: [OG_IMAGE],
   },
   twitter: {
     card: "summary_large_image",
     title: `${siteName} — ${tagline}`,
-    description:
-      "Downloaders, converters, PDF and document utilities in one self-hosted shell.",
+    description: shortDescription,
+    images: [OG_IMAGE],
   },
   robots: {
     index: true,

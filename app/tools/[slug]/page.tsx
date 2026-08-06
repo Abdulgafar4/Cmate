@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ToolWorkspace } from "@/components/tf/ToolWorkspace";
+import { OG_IMAGE } from "@/lib/siteUrl";
 import { TOOLS, getTool } from "@/lib/tools";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -15,12 +16,22 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!tool) {
     return { title: "Tool not found" };
   }
+  const title = `${tool.name} — ToolFerry`;
+  const description =
+    `${tool.desc} · ${tool.cat} tool in ToolFerry. ${tool.deps ? `Uses ${tool.deps}.` : ""}`.trim();
   return {
     title: tool.name,
-    description: `${tool.desc} · ${tool.cat} tool in ToolFerry. ${tool.deps ? `Uses ${tool.deps}.` : ""}`.trim(),
+    description,
     openGraph: {
-      title: `${tool.name} — ToolFerry`,
+      title,
       description: tool.desc,
+      images: [OG_IMAGE],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description: tool.desc,
+      images: [OG_IMAGE],
     },
   };
 }

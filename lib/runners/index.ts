@@ -26,6 +26,135 @@ function opt(ctx: RunContext, key: string, fallback: string): string {
   return ctx.options[key] || fallback;
 }
 
+async function probeMedia(filePath: string): Promise<string> {
+  const config = await getConfig();
+  const ffmpeg = config.ffmpegPath;
+  const ffprobe = ffmpeg.replace(/ffmpeg(\.exe)?$/i, "ffprobe$1");
+  const args = [
+    "-v",
+    "quiet",
+    "-print_format",
+    "json",
+    "-show_format",
+    "-show_streams",
+    "-show_entries",
+    "format_tags:stream_tags",
+    filePath,
+  ];
+
+  const raw = await new Promise<string>((resolve, reject) => {
+    const child = spawn(ffprobe, args, { stdio: ["ignore", "pipe", "pipe"] });
+    let out = "";
+    let err = "";
+    child.stdout?.on("data", (c: Buffer) => {
+      out += c.toString();
+    });
+    child.stderr?.on("data", (c: Buffer) => {
+      err += c.toString();
+    });
+    child.on("error", reject);
+    child.on("close", (code) => {
+      if (code === 0 && out.trim()) resolve(out);
+      else reject(new Error(err.slice(-300) || `ffprobe exited ${code}`));
+    });
+  });
+
+  const data = JSON.parse(raw) as {
+    format?: {
+      filename?: string;
+      format_name?: string;
+      format_long_name?: string;
+      size?: string;
+      duration?: string;
+      bit_rate?: string;
+      tags?: Record<string, string>;
+    };
+    streams?: Array<{
+      codec_type?: string;
+      codec_name?: string;
+      width?: number;
+      height?: number;
+      sample_rate?: string;
+      channels?: number;
+      tags?: Record<string, string>;
+    }>;
+  };
+
+  const lines: string[] = [];
+  const fmt = data.format ?? {};
+  lines.push(`File: ${path.basename(fmt.filename || filePath)}`);
+  if (fmt.format_long_name || fmt.format_name) {
+    lines.push(`Container: ${fmt.format_long_name || fmt.format_name}`);
+  }
+  if (fmt.size) {
+    const n = Number(fmt.size);
+    lines.push(
+      `Size: ${
+        n >= 1024 * 1024
+          ? `${(n / (1024 * 1024)).toFixed(2)} MB`
+          : n >= 1024
+            ? `${(n / 1024).toFixed(1)} KB`
+            : `${n} B`
+      }`,
+    );
+  }
+  if (fmt.duration) {
+    lines.push(`Duration: ${Number(fmt.duration).toFixed(2)}s`);
+  }
+  if (fmt.bit_rate) {
+    lines.push(`Bitrate: ${Math.round(Number(fmt.bit_rate) / 1000)} kbps`);
+  }
+
+  for (const stream of data.streams ?? []) {
+    if (stream.codec_type === "video") {
+      lines.push(
+        `Video: ${stream.codec_name || "unknown"}${
+          stream.width && stream.height
+            ? ` · ${stream.width}×${stream.height}`
+            : ""
+        }`,
+      );
+    } else if (stream.codec_type === "audio") {
+      lines.push(
+        `Audio: ${stream.codec_name || "unknown"}${
+          stream.sample_rate ? ` · ${stream.sample_rate} Hz` : ""
+        }${stream.channels ? ` · ${stream.channels} ch` : ""}`,
+      );
+    }
+    for (const [k, v] of Object.entries(stream.tags ?? {})) {
+      lines.push(`  ${k}: ${v}`);
+    }
+  }
+
+  const formatTags = fmt.tags ?? {};
+  const tagKeys = Object.keys(formatTags);
+  if (tagKeys.length) {
+    lines.push("Tags:");
+    for (const k of tagKeys.sort()) {
+      lines.push(`  ${k}: ${formatTags[k]}`);
+    }
+  } else {
+    lines.push("Tags: (none detected)");
+  }
+
+  return lines.join("\n");
+}
+
+async function stripImageMetadata(input: string, output: string): Promise<void> {
+  const { Image } = await import("imagescript");
+  const img = await Image.decode(await readFile(input));
+  const ext = path.extname(output).toLowerCase();
+  let encoded: Uint8Array;
+  if (ext === ".jpg" || ext === ".jpeg") {
+    encoded = await img.encodeJPEG(90 as 1);
+  } else if (ext === ".webp") {
+    encoded = await img.encodeWEBP(90 as 1);
+  } else {
+    encoded = await img.encode();
+  }
+  await writeFile(output, Buffer.from(encoded));
+}
+
 async function loadPdf(bytes: Buffer | Uint8Array) {
   return PDFDocument.load(bytes, { ignoreEncryption: true });
 }
@@ -721,21 +850,47 @@ async function runUtil(ctx: RunContext): Promise<RunResult> {
 
   if (ctx.toolSlug === "metadata") {
     const inputs = requireInputs(ctx);
-    const ext = path.extname(inputs[0]).slice(1) || "bin";
+    const input = inputs[0];
+    const ext = path.extname(input).slice(1) || "bin";
     const output = outPath(ctx, ext);
-    if (/\.(jpe?g|png|webp|avif|gif|mp4|mov|mkv|webm|mp3|m4a)$/i.test(inputs[0])) {
+    const mode = opt(ctx, "Remove", "All metadata");
+
+    ctx.onProgress(15);
+    let report: string;
+    try {
+      report = await probeMedia(input);
+    } catch {
+      report = `File: ${path.basename(input)}\n(Could not probe detailed tags)`;
+    }
+    ctx.onProgress(40);
+
+    const isImage = /\.(jpe?g|png|webp|gif)$/i.test(input);
+    const isMedia = /\.(mp4|mov|mkv|webm|mp3|m4a|aac|wav)$/i.test(input);
+
+    if (isImage) {
+      await stripImageMetadata(input, output);
+    } else if (isMedia) {
       await runFfmpeg(
-        ["-i", inputs[0], "-map_metadata", "-1", "-c", "copy", output],
+        ["-i", input, "-map_metadata", "-1", "-c", "copy", output],
         ctx.onProgress,
       );
+    } else if (/\.pdf$/i.test(input)) {
+      const doc = await loadPdf(await readFile(input));
+      await writeFile(output, await doc.save());
     } else {
-      await copyFile(inputs[0], output);
+      await copyFile(input, output);
     }
+
+    const note =
+      mode === "GPS only" || mode === "Keep copyright"
+        ? `\n\nMode “${mode}”: selective EXIF edit needs exiftool on the host. Applied a full metadata strip instead.`
+        : "\n\nMetadata stripped from the downloadable copy.";
+
     ctx.onProgress(100);
     return {
       outputPath: output,
       fileName: path.basename(output),
-      resultText: "Metadata stripped where ffmpeg supports the format.",
+      resultText: `Before strip\n────────────\n${report}${note}`,
     };
   }
 

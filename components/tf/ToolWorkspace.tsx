@@ -767,16 +767,24 @@ export function ToolWorkspace({ tool }: { tool: Tool }) {
             : first!.name;
       }
 
+      const isMeta = tool.slug === "metadata";
+
       return {
-        title: tool.cat === "PDF" ? "First file" : "Preview",
+        title: isMeta
+          ? "Image"
+          : tool.cat === "PDF"
+            ? "First file"
+            : "Preview",
         ratio: tool.cat === "PDF" ? "3 / 4" : isImageFile ? "4 / 3" : "16 / 9",
-        note:
-          tool.cat === "PDF"
+        note: isMeta
+          ? "Tags appear beside the file after you start. Download gets a cleaned copy."
+          : tool.cat === "PDF"
             ? "Merged files keep their own page sizes unless you normalise."
             : "Estimates update with your current options.",
         stats: [
           { k: "Files", v: String(fileCount || "—") },
           { k: "Total in", v: fileCount ? formatBytes(totalBytes) : "—" },
+          ...(opt.Remove ? [{ k: "Remove", v: opt.Remove }] : []),
           ...(opt["Target format"]
             ? [{ k: "Target", v: opt["Target format"] }]
             : []),
@@ -884,7 +892,7 @@ export function ToolWorkspace({ tool }: { tool: Tool }) {
         <div
           className={cn(
             "grid gap-4",
-            aside
+            aside && tool.slug !== "metadata"
               ? "lg:grid-cols-[minmax(0,1fr)_300px] xl:grid-cols-[minmax(0,1fr)_320px]"
               : "grid-cols-1",
           )}
@@ -1083,7 +1091,68 @@ export function ToolWorkspace({ tool }: { tool: Tool }) {
               </div>
             ) : null}
 
-            {resultText && job === "done" ? (
+            {tool.slug === "metadata" &&
+            (files.length > 0 || (resultText && job === "done")) ? (
+              <div className="rounded-[22px] border border-[var(--line)] bg-[var(--surface)] p-5 tf-shadow">
+                <div className="mb-3 text-[13px] font-semibold">
+                  {job === "done" ? "Image + metadata" : "Ready to inspect"}
+                </div>
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div
+                    className="relative overflow-hidden rounded-[12px] border border-[var(--line2)] bg-[var(--paper)]"
+                    style={{ aspectRatio: "4 / 3", minHeight: 180 }}
+                  >
+                    {filePreviewUrl &&
+                    files[0] &&
+                    /^image\//.test(files[0].type) ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={filePreviewUrl}
+                        alt={files[0]?.name || "Uploaded file"}
+                        className="absolute inset-0 size-full object-contain"
+                      />
+                    ) : files[0] ? (
+                      <div className="absolute inset-0 grid place-items-center px-4 text-center">
+                        <div>
+                          <div className="font-mono text-[12px] text-[var(--ink)]">
+                            {files[0].name}
+                          </div>
+                          <div className="mt-1 text-[11.5px] text-[var(--muted)]">
+                            {formatBytes(files[0].size)} · preview for images
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="absolute inset-0 grid place-items-center font-mono text-[11px] text-[var(--muted)]">
+                        Drop a file
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex min-h-[180px] flex-col">
+                    <div className="mb-2 text-[12px] font-medium text-[var(--muted)]">
+                      {job === "done"
+                        ? "Detected tags (before strip)"
+                        : job === "running"
+                          ? "Reading tags…"
+                          : "Metadata report"}
+                    </div>
+                    {resultText && job === "done" ? (
+                      <pre className="max-h-72 flex-1 overflow-auto whitespace-pre-wrap break-all rounded-[12px] bg-[var(--paper)] p-3 font-mono text-[12.5px]">
+                        {resultText}
+                      </pre>
+                    ) : (
+                      <div className="flex flex-1 items-center rounded-[12px] border border-dashed border-[var(--line2)] bg-[var(--paper)] px-4 py-6 text-[13px] leading-relaxed text-[var(--ink2)]">
+                        {job === "running"
+                          ? "Probing file metadata…"
+                          : "Start to list EXIF / GPS / media tags beside the preview, then download a cleaned copy."}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ) : null}
+
+            {resultText && job === "done" && tool.slug !== "metadata" ? (
               <div className="rounded-[22px] border border-[var(--line)] bg-[var(--surface)] p-5 tf-shadow">
                 <div className="mb-2 text-[13px] font-semibold">Result</div>
                 <pre className="max-h-64 overflow-auto whitespace-pre-wrap break-all rounded-[12px] bg-[var(--paper)] p-3 font-mono text-[12.5px]">
@@ -1093,7 +1162,7 @@ export function ToolWorkspace({ tool }: { tool: Tool }) {
             ) : null}
           </div>
 
-          {aside ? (
+          {aside && tool.slug !== "metadata" ? (
             <aside
               className={cn(
                 "h-fit rounded-[22px] border border-[var(--line)] bg-[var(--surface)] p-4 tf-shadow",
