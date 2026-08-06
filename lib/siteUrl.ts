@@ -39,6 +39,6 @@ export const OG_IMAGE = {
   url: "/opengraph-image",
   width: 1200,
   height: 630,
-  alt: "ToolFerry — downloaders, converters, PDF and document tools in one shell",
+  alt: "ToolFerry — 38 tools, one calm shell",
   type: "image/png",
 } as const;

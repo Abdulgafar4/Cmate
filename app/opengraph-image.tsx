@@ -1,17 +1,124 @@
 import { ImageResponse } from "next/og";
+import { TOOLS } from "@/lib/tools";
 
 export const alt =
-  "ToolFerry — downloaders, converters, PDF and document tools in one shell";
+  "ToolFerry — 38 tools, one calm shell. Downloaders, converters, PDF and utilities.";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
+const PAPER = "#F7F5F0";
+const PAPER2 = "#EDEAE3";
+const SURFACE = "#FFFFFF";
 const INK = "#2A2824";
-const PAPER = "#F4F1EA";
-const SURFACE = "#FFFcf7";
+const INK2 = "#6B6760";
+const MUTED = "#8A857C";
+const LINE = "#E4E0D8";
 const ACCENT = "#2F7A8C";
-const MUTED = "#6B6760";
+const ACCENT_SOFT = "#D9EBEE";
+const OK = "#3D8B6E";
 
-export default function OpenGraphImage() {
+async function loadDisplayFont(): Promise<ArrayBuffer | null> {
+  try {
+    const css = await fetch(
+      "https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@800&display=swap",
+      {
+        headers: {
+          // Request a TTF/OTF URL — Satori cannot decode woff2.
+          "User-Agent":
+            "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; Trident/6.0)",
+        },
+      },
+    ).then((r) => r.text());
+    const match = css.match(/src:\s*url\(([^)]+)\)/);
+    if (!match?.[1]) return null;
+    return await fetch(match[1]).then((r) => r.arrayBuffer());
+  } catch {
+    return null;
+  }
+}
+
+function DownloadIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+      <line
+        x1="12"
+        y1="3"
+        x2="12"
+        y2="15"
+        stroke={ACCENT}
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+      <polyline
+        points="7 10 12 15 17 10"
+        stroke={ACCENT}
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        fill="none"
+      />
+      <line
+        x1="5"
+        y1="20"
+        x2="19"
+        y2="20"
+        stroke={ACCENT}
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+function PdfIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+      <rect
+        x="5"
+        y="3"
+        width="14"
+        height="18"
+        rx="2"
+        stroke={ACCENT}
+        strokeWidth="1.8"
+      />
+      <line
+        x1="9"
+        y1="9"
+        x2="15"
+        y2="9"
+        stroke={ACCENT}
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+      <line
+        x1="9"
+        y1="13"
+        x2="15"
+        y2="13"
+        stroke={ACCENT}
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+export default async function OpenGraphImage() {
+  const fontData = await loadDisplayFont();
+  const fonts = fontData
+    ? [
+        {
+          name: "Bricolage Grotesque",
+          data: fontData,
+          style: "normal" as const,
+          weight: 800 as const,
+        },
+      ]
+    : [];
+
+  const display = fontData ? "Bricolage Grotesque" : "system-ui";
+
   return new ImageResponse(
     (
       <div
@@ -20,183 +127,301 @@ export default function OpenGraphImage() {
           height: "100%",
           display: "flex",
           flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
           background: PAPER,
           position: "relative",
           overflow: "hidden",
         }}
       >
-        {/* Soft grid wash */}
+        {/* Soft grid — same atmosphere as the site */}
         <div
           style={{
             position: "absolute",
             inset: 0,
             backgroundImage:
-              "linear-gradient(to right, rgba(42,40,36,0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(42,40,36,0.05) 1px, transparent 1px)",
+              "linear-gradient(to right, rgba(42,40,36,0.045) 1px, transparent 1px), linear-gradient(to bottom, rgba(42,40,36,0.045) 1px, transparent 1px)",
             backgroundSize: "48px 48px",
-            opacity: 0.55,
-          }}
-        />
-        <div
-          style={{
-            position: "absolute",
-            right: -80,
-            top: -100,
-            width: 480,
-            height: 480,
-            borderRadius: 999,
-            background: "rgba(47,122,140,0.14)",
-          }}
-        />
-        <div
-          style={{
-            position: "absolute",
-            left: -60,
-            bottom: -120,
-            width: 360,
-            height: 360,
-            borderRadius: 999,
-            background: "rgba(42,40,36,0.06)",
+            opacity: 0.7,
           }}
         />
 
+        {/* Left floating download card */}
         <div
           style={{
+            position: "absolute",
+            left: 56,
+            bottom: 78,
             display: "flex",
+            width: 228,
             flexDirection: "column",
-            justifyContent: "space-between",
-            flex: 1,
-            padding: "64px 72px",
-            position: "relative",
+            gap: 14,
+            borderRadius: 26,
+            border: `1.5px solid ${LINE}`,
+            background: SURFACE,
+            padding: 18,
+            transform: "rotate(-10deg)",
+            boxShadow: "0 18px 40px rgba(42,40,36,0.08)",
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 11 }}>
             <div
               style={{
-                width: 72,
-                height: 72,
-                borderRadius: 20,
-                background: INK,
+                width: 38,
+                height: 38,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                borderRadius: 11,
+                border: `1px solid ${LINE}`,
+                background: ACCENT_SOFT,
+              }}
+            >
+              <DownloadIcon />
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+              <div
+                style={{
+                  fontSize: 14,
+                  fontWeight: 600,
+                  color: INK,
+                  letterSpacing: "-0.02em",
+                }}
+              >
+                workspace-walkthrough
+              </div>
+              <div
+                style={{
+                  fontSize: 11,
+                  fontFamily: "ui-monospace, monospace",
+                  color: MUTED,
+                }}
+              >
+                MP4 · 1080p
+              </div>
+            </div>
+          </div>
+          <div
+            style={{
+              display: "flex",
+              height: 5,
+              borderRadius: 999,
+              background: PAPER2,
+              overflow: "hidden",
+            }}
+          >
+            <div
+              style={{
+                width: "72%",
+                height: "100%",
+                background: ACCENT,
+                borderRadius: 999,
+              }}
+            />
+          </div>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              fontFamily: "ui-monospace, monospace",
+              fontSize: 11,
+              color: MUTED,
+            }}
+          >
+            <span>DOWNLOADING</span>
+            <span style={{ color: ACCENT }}>72%</span>
+          </div>
+        </div>
+
+        {/* Right floating PDF card */}
+        <div
+          style={{
+            position: "absolute",
+            right: 64,
+            top: 52,
+            display: "flex",
+            width: 228,
+            flexDirection: "column",
+            gap: 14,
+            borderRadius: 26,
+            border: `1.5px solid ${LINE}`,
+            background: SURFACE,
+            padding: 18,
+            transform: "rotate(10deg)",
+            boxShadow: "0 18px 40px rgba(42,40,36,0.08)",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: 11 }}>
+            <div
+              style={{
+                width: 38,
+                height: 38,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                borderRadius: 11,
+                border: `1px solid ${LINE}`,
+                background: ACCENT_SOFT,
+              }}
+            >
+              <PdfIcon />
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+              <div
+                style={{
+                  fontSize: 14,
+                  fontWeight: 600,
+                  color: INK,
+                  letterSpacing: "-0.02em",
+                }}
+              >
+                proposal-merged.pdf
+              </div>
+              <div
+                style={{
+                  fontSize: 11,
+                  fontFamily: "ui-monospace, monospace",
+                  color: MUTED,
+                }}
+              >
+                3 files · 24 pages
+              </div>
+            </div>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
+            <div
+              style={{
+                width: 22,
+                height: 22,
+                borderRadius: 999,
+                background: OK,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
               }}
             >
-              <svg width="48" height="48" viewBox="0 0 32 32" fill="none">
-                <path
-                  d="M6 22.5c2.2-1.2 4.4-1.2 6.6 0s4.4 1.2 6.6 0 4.4-1.2 6.6 0"
-                  stroke={ACCENT}
-                  strokeWidth="1.5"
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                <polyline
+                  points="5 12 10 17 19 7"
+                  stroke="white"
+                  strokeWidth="2.8"
                   strokeLinecap="round"
-                />
-                <path
-                  d="M8.5 18.2h15l-1.6 3.1c-.25.48-.74.78-1.28.78H11.4c-.54 0-1.03-.3-1.28-.78L8.5 18.2Z"
-                  fill={PAPER}
-                />
-                <path
-                  d="M12 12.2h8c.55 0 1 .45 1 1v5H11v-5c0-.55.45-1 1-1Z"
-                  fill={ACCENT}
-                />
-                <rect
-                  x="13.1"
-                  y="13.4"
-                  width="2.2"
-                  height="2.2"
-                  rx="0.4"
-                  fill={PAPER}
-                />
-                <rect
-                  x="16.9"
-                  y="13.4"
-                  width="2.2"
-                  height="2.2"
-                  rx="0.4"
-                  fill={PAPER}
+                  strokeLinejoin="round"
                 />
               </svg>
             </div>
-            <div style={{ display: "flex", alignItems: "baseline", gap: 0 }}>
-              <span
-                style={{
-                  fontSize: 42,
-                  fontWeight: 800,
-                  letterSpacing: "-0.04em",
-                  color: INK,
-                }}
-              >
-                Tool
-              </span>
-              <span
-                style={{
-                  fontSize: 42,
-                  fontWeight: 800,
-                  letterSpacing: "-0.04em",
-                  color: ACCENT,
-                }}
-              >
-                Ferry
-              </span>
-            </div>
+            <div style={{ fontSize: 13, color: INK2 }}>Done in 4.1s</div>
           </div>
+        </div>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
-            <div
-              style={{
-                fontSize: 58,
-                fontWeight: 800,
-                letterSpacing: "-0.045em",
-                lineHeight: 1.05,
-                color: INK,
-                maxWidth: 900,
-              }}
-            >
-              Every tool in one calm shell
-            </div>
-            <div
-              style={{
-                fontSize: 28,
-                color: MUTED,
-                maxWidth: 760,
-                lineHeight: 1.35,
-              }}
-            >
-              Downloaders · converters · PDF · documents · utilities. Nothing to
-              install. Files expire.
-            </div>
-          </div>
+        {/* Circular CTA — bottom right */}
+        <div
+          style={{
+            position: "absolute",
+            right: 72,
+            bottom: 48,
+            width: 118,
+            height: 118,
+            borderRadius: 999,
+            background: INK,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            transform: "rotate(10deg)",
+            boxShadow: "0 16px 36px rgba(42,40,36,0.18)",
+          }}
+        >
+          <svg
+            width="34"
+            height="34"
+            viewBox="0 0 100 100"
+            fill="none"
+            stroke={ACCENT}
+            strokeWidth="8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M20,80 Q 40,50 30,30 T 80,20" />
+            <path d="M60,10 L80,20 L70,40" />
+          </svg>
+        </div>
 
+        {/* Hero type stack */}
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: 0,
+            position: "relative",
+            marginTop: -24,
+          }}
+        >
           <div
             style={{
               display: "flex",
-              alignItems: "center",
-              gap: 14,
+              fontFamily: display,
+              fontSize: 72,
+              fontWeight: 800,
+              lineHeight: 0.88,
+              letterSpacing: "-0.05em",
+              textTransform: "uppercase",
+              color: ACCENT,
+              marginLeft: -120,
             }}
           >
-            {[
-              "Social download",
-              "Media convert",
-              "PDF toolkit",
-              "Self-hosted",
-            ].map((label) => (
-              <div
-                key={label}
-                style={{
-                  display: "flex",
-                  padding: "10px 18px",
-                  borderRadius: 999,
-                  background: SURFACE,
-                  border: `1.5px solid rgba(42,40,36,0.12)`,
-                  fontSize: 18,
-                  fontWeight: 600,
-                  color: INK,
-                }}
-              >
-                {label}
-              </div>
-            ))}
+            {TOOLS.length} tools
           </div>
+          <div
+            style={{
+              display: "flex",
+              fontFamily: display,
+              fontSize: 96,
+              fontWeight: 800,
+              lineHeight: 0.88,
+              letterSpacing: "-0.05em",
+              textTransform: "uppercase",
+              color: INK,
+            }}
+          >
+            Toolferry
+          </div>
+          <div
+            style={{
+              display: "flex",
+              fontFamily: display,
+              fontSize: 72,
+              fontWeight: 800,
+              lineHeight: 0.88,
+              letterSpacing: "-0.05em",
+              textTransform: "uppercase",
+              color: INK,
+              marginLeft: 80,
+            }}
+          >
+            One shell
+          </div>
+        </div>
+
+        <div
+          style={{
+            display: "flex",
+            marginTop: 36,
+            fontSize: 22,
+            color: INK2,
+            maxWidth: 640,
+            textAlign: "center",
+            lineHeight: 1.4,
+          }}
+        >
+          Downloaders, converters, PDF and document utilities — every tool in
+          the same calm shell.
         </div>
       </div>
     ),
-    { ...size },
+    {
+      ...size,
+      fonts,
+    },
   );
 }
