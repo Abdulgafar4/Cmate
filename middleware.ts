@@ -65,5 +65,8 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image).*)"],
+  // Skip upload bodies — middleware buffering breaks multipart FormData for large files.
+  matcher: [
+    "/((?!_next/static|_next/image|api/tools/upload|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+  ],
 };

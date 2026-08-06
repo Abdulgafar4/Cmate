@@ -1,5 +1,10 @@
 import { z } from "zod";
 import type { FormatPresetId } from "./downloadOptions";
+import {
+  isSupportedDownloadUrl,
+  isUrlAllowedForTool,
+  normalizeUrl,
+} from "./platforms";
 
 const ALLOWED_HOSTS = new Set([
   "www.youtube.com",
@@ -11,7 +16,7 @@ const ALLOWED_HOSTS = new Set([
 
 export function isValidYouTubeUrl(url: string): boolean {
   try {
-    const parsed = new URL(url);
+    const parsed = new URL(normalizeUrl(url));
     if (!["http:", "https:"].includes(parsed.protocol)) {
       return false;
     }
@@ -35,7 +40,7 @@ export function isValidYouTubeUrl(url: string): boolean {
 
 export function isPlaylistUrl(url: string): boolean {
   try {
-    const parsed = new URL(url);
+    const parsed = new URL(normalizeUrl(url));
     return (
       parsed.pathname === "/playlist" ||
       parsed.searchParams.has("list")
@@ -58,7 +63,17 @@ export const urlSchema = z.object({
   url: z
     .string()
     .min(1, "URL is required")
-    .refine(isValidYouTubeUrl, "Only YouTube URLs are allowed"),
+    .transform(normalizeUrl)
+    .refine(isSupportedDownloadUrl, "Unsupported media URL"),
+  toolSlug: z.string().optional(),
+}).superRefine((val, ctx) => {
+  if (val.toolSlug && !isUrlAllowedForTool(val.url, val.toolSlug)) {
+    ctx.addIssue({
+      code: "custom",
+      message: `That link is not valid for this tool`,
+      path: ["url"],
+    });
+  }
 });
 
 export const downloadOptionsSchema = z
@@ -81,10 +96,20 @@ export const downloadSchema = z.object({
   url: z
     .string()
     .min(1, "URL is required")
-    .refine(isValidYouTubeUrl, "Only YouTube URLs are allowed"),
+    .transform(normalizeUrl)
+    .refine(isSupportedDownloadUrl, "Unsupported media URL"),
   formatId: formatEnum,
   title: z.string().min(1, "Title is required").max(300),
   options: downloadOptionsSchema.optional(),
+  toolSlug: z.string().optional(),
+}).superRefine((val, ctx) => {
+  if (val.toolSlug && !isUrlAllowedForTool(val.url, val.toolSlug)) {
+    ctx.addIssue({
+      code: "custom",
+      message: `That link is not valid for this tool`,
+      path: ["url"],
+    });
+  }
 });
 
 export const batchDownloadSchema = z.object({
@@ -94,7 +119,8 @@ export const batchDownloadSchema = z.object({
         url: z
           .string()
           .min(1)
-          .refine(isValidYouTubeUrl, "Only YouTube URLs are allowed"),
+          .transform(normalizeUrl)
+          .refine(isSupportedDownloadUrl, "Unsupported media URL"),
         formatId: formatEnum,
         title: z.string().min(1).max(300),
         options: downloadOptionsSchema.optional(),
@@ -102,6 +128,7 @@ export const batchDownloadSchema = z.object({
     )
     .min(1, "Add at least one video")
     .max(25, "Maximum 25 videos per batch"),
+  toolSlug: z.string().optional(),
 });
 
 export type { FormatPresetId };

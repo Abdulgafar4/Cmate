@@ -4,6 +4,7 @@ import { Readable } from "stream";
 import { NextResponse } from "next/server";
 import { contentDispositionHeader } from "@/lib/filename";
 import { getJob } from "@/lib/jobs";
+import { getToolJob } from "@/lib/toolJobs";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -14,26 +15,32 @@ export async function GET(
 ) {
   const { id } = await context.params;
   const job = getJob(id);
+  const toolJob = job ? null : getToolJob(id);
 
-  if (!job) {
+  if (!job && !toolJob) {
     return NextResponse.json({ error: "Job not found" }, { status: 404 });
   }
 
-  if (job.status !== "done" || !job.filePath) {
+  const filePath = job?.filePath ?? toolJob?.outputPath;
+  const done =
+    (job && job.status === "done" && filePath) ||
+    (toolJob && toolJob.status === "done" && filePath);
+
+  if (!done || !filePath) {
     return NextResponse.json(
       { error: "File is not ready yet" },
       { status: 409 },
     );
   }
 
+  const fileName = job?.fileName ?? toolJob?.fileName ?? "download.bin";
+
   try {
-    const fileStat = await stat(job.filePath);
-    const stream = createReadStream(job.filePath);
+    const fileStat = await stat(filePath);
+    const stream = createReadStream(filePath);
     const webStream = Readable.toWeb(stream) as ReadableStream;
 
-    const fileName = job.fileName ?? "download.mp4";
-
-    const response = new NextResponse(webStream, {
+    return new NextResponse(webStream, {
       headers: {
         "Content-Type": "application/octet-stream",
         "Content-Length": String(fileStat.size),
@@ -41,8 +48,6 @@ export async function GET(
         "Cache-Control": "no-store",
       },
     });
-
-    return response;
   } catch (error) {
     return NextResponse.json(
       {

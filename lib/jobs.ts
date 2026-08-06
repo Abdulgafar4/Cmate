@@ -36,6 +36,7 @@ export interface Job {
   error?: string;
   createdAt: number;
   ownerKey?: string;
+  toolSlug?: string;
 }
 
 interface QueueItem {
@@ -80,7 +81,7 @@ export function createJob(
   formatId: FormatPresetId,
   videoTitle: string,
   options: DownloadOptions = {},
-  meta?: { channel?: string; ownerKey?: string },
+  meta?: { channel?: string; ownerKey?: string; toolSlug?: string },
 ): Job {
   const job: Job = {
     id: randomUUID(),
@@ -93,6 +94,7 @@ export function createJob(
     progress: 0,
     createdAt: Date.now(),
     ownerKey: meta?.ownerKey,
+    toolSlug: meta?.toolSlug ?? "youtube",
   };
 
   const store = getStore();
@@ -232,6 +234,7 @@ async function runJob(job: Job): Promise<void> {
       shareToken: job.shareToken,
       ownerKey: job.ownerKey,
       createdAt: Date.now(),
+      toolSlug: job.toolSlug ?? "youtube",
     });
 
     void notifyDiscord({

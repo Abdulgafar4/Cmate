@@ -1,36 +1,16 @@
+import { BrandLogo } from "@/components/tf/BrandLogo";
 import { cn } from "@/lib/utils";
 
-function PlayGlyph({ className }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      className={cn("fill-current", className)}
-      aria-hidden="true"
-    >
-      <path d="M8 5v14l11-7z" />
-    </svg>
-  );
-}
-
 const SIZE_STYLES = {
-  sm: {
-    text: "text-sm",
-    play: "size-2.5",
-    gap: "gap-px",
-    nudge: "-mx-px",
-  },
-  md: {
-    text: "text-base",
-    play: "size-3",
-    gap: "gap-0.5",
-    nudge: "-mx-0.5",
-  },
-  lg: {
-    text: "text-3xl sm:text-4xl",
-    play: "size-5 sm:size-6",
-    gap: "gap-1",
-    nudge: "-mx-0.5",
-  },
+  sm: "text-base gap-1.5",
+  md: "text-lg gap-2",
+  lg: "text-2xl gap-2.5",
+} as const;
+
+const LOGO_SIZE = {
+  sm: "size-6",
+  md: "size-7",
+  lg: "size-9",
 } as const;
 
 interface BrandWordmarkProps {
@@ -38,30 +18,21 @@ interface BrandWordmarkProps {
   size?: keyof typeof SIZE_STYLES;
 }
 
+/** Legacy wordmark — prefers ToolFerry mark used by the hub UI. */
 export function BrandWordmark({ className, size = "md" }: BrandWordmarkProps) {
-  const styles = SIZE_STYLES[size];
-
   return (
     <span
       className={cn(
-        "inline-flex items-center font-bold tracking-tight",
-        styles.text,
-        styles.gap,
+        "inline-flex items-center font-display font-extrabold tracking-tight text-[var(--ink)]",
+        SIZE_STYLES[size],
         className,
       )}
-      aria-label="Cmate"
+      aria-label="ToolFerry"
     >
-      <span className="text-primary">C</span>
-      <span
-        className={cn(
-          "inline-flex items-center justify-center text-primary",
-          styles.nudge,
-        )}
-        aria-hidden="true"
-      >
-        <PlayGlyph className={styles.play} />
+      <BrandLogo className={LOGO_SIZE[size]} />
+      <span>
+        Tool<span className="text-[var(--accent)]">Ferry</span>
       </span>
-      <span>mate</span>
     </span>
   );
 }

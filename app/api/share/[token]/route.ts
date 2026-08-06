@@ -5,6 +5,7 @@ import { NextResponse } from "next/server";
 import { contentDispositionHeader } from "@/lib/filename";
 import { getJob } from "@/lib/jobs";
 import { resolveShareToken } from "@/lib/shareLinks";
+import { getToolJob } from "@/lib/toolJobs";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -23,7 +24,13 @@ export async function GET(
   }
 
   const job = getJob(jobId);
-  if (!job || job.status !== "done" || !job.filePath) {
+  const toolJob = job ? null : getToolJob(jobId);
+  const filePath = job?.filePath ?? toolJob?.outputPath;
+  const ready =
+    (job && job.status === "done" && filePath) ||
+    (toolJob && toolJob.status === "done" && filePath);
+
+  if (!ready || !filePath) {
     return NextResponse.json(
       { error: "File is not available" },
       { status: 409 },
@@ -31,10 +38,10 @@ export async function GET(
   }
 
   try {
-    const fileStat = await stat(job.filePath);
-    const stream = createReadStream(job.filePath);
+    const fileStat = await stat(filePath);
+    const stream = createReadStream(filePath);
     const webStream = Readable.toWeb(stream) as ReadableStream;
-    const fileName = job.fileName ?? "download.mp4";
+    const fileName = job?.fileName ?? toolJob?.fileName ?? "download.bin";
 
     return new NextResponse(webStream, {
       headers: {

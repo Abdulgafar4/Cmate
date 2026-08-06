@@ -1,6 +1,7 @@
 import { readdir, stat, unlink } from "fs/promises";
 import path from "path";
 import { getConfig } from "./config";
+import { getPinnedJobIds } from "./serverHistory";
 
 export async function ensureDownloadDir(): Promise<void> {
   const config = await getConfig();
@@ -18,6 +19,7 @@ export async function deleteFile(filePath: string): Promise<void> {
 
 export async function cleanupExpiredFiles(): Promise<void> {
   const config = await getConfig();
+  const pinnedIds = getPinnedJobIds();
 
   try {
     const entries = await readdir(config.downloadDir);
@@ -29,6 +31,12 @@ export async function cleanupExpiredFiles(): Promise<void> {
         const fileStat = await stat(filePath);
         if (!fileStat.isFile()) {
           return;
+        }
+        // Files are named {jobId}… — skip pinned jobs (7-day keep)
+        for (const jobId of pinnedIds) {
+          if (entry.startsWith(jobId)) {
+            return;
+          }
         }
         if (now - fileStat.mtimeMs > config.fileTtlMs) {
           await deleteFile(filePath);

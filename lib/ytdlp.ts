@@ -266,12 +266,7 @@ function appendAudioArgs(args: string[], formatId: FormatPresetId): void {
     return;
   }
   if (formatId === "audio") {
-    args.push(
-      "--remux-audio",
-      "m4a",
-      "--postprocessor-args",
-      "ffmpeg:-threads 0 -c:a copy",
-    );
+    args.push("-x", "--audio-format", "m4a", "--audio-quality", "0");
     return;
   }
   args.push(

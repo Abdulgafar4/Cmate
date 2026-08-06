@@ -44,6 +44,7 @@ export async function POST(request: Request) {
       {
         channel: parsed.data.options?.channel,
         ownerKey: ownerKey ?? undefined,
+        toolSlug: parsed.data.toolSlug,
       },
     );
 

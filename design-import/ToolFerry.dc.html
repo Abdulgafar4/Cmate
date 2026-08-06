@@ -1,0 +1,1408 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+:root{
+--paper:oklch(0.982 0.004 85);
+--paper2:oklch(0.955 0.006 85);
+--surface:oklch(1 0 0);
+--ink:oklch(0.24 0.012 80);
+--ink2:oklch(0.46 0.012 80);
+--muted:oklch(0.60 0.010 80);
+--line:oklch(0.905 0.006 80);
+--line2:oklch(0.845 0.008 80);
+--accent:oklch(0.52 0.088 208);
+--accent-ink:oklch(0.99 0.005 208);
+--accent-soft:oklch(0.955 0.022 208);
+--warn:oklch(0.62 0.10 60);
+--ok:oklch(0.58 0.08 155);
+--shadow:0 1px 2px oklch(0.24 0.012 80 / .05), 0 8px 24px -12px oklch(0.24 0.012 80 / .18);
+}
+:root[data-theme="dark"]{
+--paper:oklch(0.205 0.008 80);
+--paper2:oklch(0.245 0.008 80);
+--surface:oklch(0.255 0.009 80);
+--ink:oklch(0.955 0.004 85);
+--ink2:oklch(0.80 0.006 80);
+--muted:oklch(0.66 0.008 80);
+--line:oklch(0.335 0.008 80);
+--line2:oklch(0.40 0.008 80);
+--accent:oklch(0.74 0.095 208);
+--accent-ink:oklch(0.20 0.02 208);
+--accent-soft:oklch(0.30 0.030 208);
+--shadow:0 1px 2px oklch(0 0 0 / .3), 0 10px 30px -14px oklch(0 0 0 / .6);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--paper);color:var(--ink);font-family:"Instrument Sans",-apple-system,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-decoration:none}
+a:hover{color:var(--ink)}
+button{font:inherit;color:inherit}
+input,textarea{font:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+::selection{background:var(--accent-soft)}
+@keyframes tfRise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes tfFade{from{opacity:0}to{opacity:1}}
+@keyframes tfSlideIn{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:none}}
+@keyframes tfPop{0%{opacity:0;transform:scale(.92)}60%{transform:scale(1.03)}100%{opacity:1;transform:scale(1)}}
+@keyframes tfSheen{from{background-position:0 0}to{background-position:36px 0}}
+@keyframes tfFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-16px)}}
+@keyframes tfFloat2{0%,100%{transform:translateY(0)}50%{transform:translateY(-22px)}}
+@keyframes tfSpin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+@keyframes tfPulse{0%,100%{opacity:.55}50%{opacity:1}}
+@media (prefers-reduced-motion: reduce){*{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}}
+</style>
+</helmet>
+
+<div style="min-height:100vh;background:var(--paper);color:var(--ink);position:relative">
+
+<div style="position:absolute;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(to right, var(--line) 1px, transparent 1px), linear-gradient(to bottom, var(--line) 1px, transparent 1px);background-size:64px 64px;mask-image:linear-gradient(to bottom, #000 0, transparent 780px)"></div>
+
+<header style="position:sticky;top:0;z-index:40;background:color-mix(in oklab, var(--paper) 88%, transparent);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)">
+  <div style="max-width:1240px;margin:0 auto;padding:0 28px;height:62px;display:flex;align-items:center;gap:16px">
+    <button onClick="{{ goHome }}" style="display:flex;align-items:center;gap:5px;background:none;border:0;padding:0;cursor:pointer">
+      <span style="background:var(--ink);color:var(--paper);font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:12.5px;letter-spacing:-.01em;padding:5px 11px;border-radius:13px 13px 13px 3px;display:block">TOOL</span>
+      <span style="background:var(--accent-soft);color:var(--accent);border:1.5px solid var(--accent);font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:12.5px;padding:5px 12px;border-radius:999px;display:block">FERRY</span>
+    </button>
+    <nav style="display:flex;gap:4px;align-items:center">
+      <sc-for list="{{ navItems }}" as="n" hint-placeholder-count="5">
+        <button onClick="{{ n.go }}" style="border:1px solid {{ n.bd }};background:{{ n.bg }};color:{{ n.fg }};padding:7px 15px;border-radius:999px;font-size:12.5px;font-weight:600;white-space:nowrap;cursor:pointer;transition:all .18s ease">{{ n.label }}</button>
+      </sc-for>
+    </nav>
+    <div style="flex:1"></div>
+    <button onClick="{{ goHub }}" style="display:flex;align-items:center;gap:8px;height:34px;padding:0 12px;border:1px solid var(--line2);border-radius:9px;background:var(--surface);color:var(--muted);font-size:13px;white-space:nowrap;cursor:pointer;min-width:150px;flex:0 1 240px" style-hover="border-color:var(--ink2);color:var(--ink2)">
+      <span style="width:12px;height:12px;border:1.4px solid currentColor;border-radius:50%;display:block"></span>
+      <span>Search tools</span>
+      <span style="flex:1"></span>
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;border:1px solid var(--line);border-radius:4px;padding:1px 5px">/</span>
+    </button>
+    <button onClick="{{ toggleTheme }}" title="Toggle theme" style="width:34px;height:34px;border:1px solid var(--line2);border-radius:9px;background:var(--surface);cursor:pointer;display:grid;place-items:center">
+      <span style="width:13px;height:13px;border-radius:50%;border:1.5px solid var(--ink);background:linear-gradient(90deg, var(--ink) 50%, transparent 50%);display:block"></span>
+    </button>
+    <button onClick="{{ goUnlock }}" style="height:34px;padding:0 15px;border:1px solid var(--ink);border-radius:9px;background:var(--ink);color:var(--paper);font-size:13px;font-weight:500;cursor:pointer">Unlock</button>
+  </div>
+</header>
+
+<sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+<main data-screen-label="Home" style="position:relative;z-index:1;animation:tfFade .3s ease both">
+  <section style="position:relative;z-index:5;padding:44px 24px 60px">
+    <div style="position:relative;width:100%;max-width:1120px;margin:0 auto;display:flex;flex-direction:column;align-items:center;text-align:center">
+      <div style="width:100%;display:flex;flex-direction:column;align-items:center;position:relative;z-index:10;gap:6px">
+        <div style="width:100%;display:flex;justify-content:flex-start;padding-left:22%;position:relative;z-index:30">
+          <h1 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(3rem,8.6vw,124px);line-height:.84;letter-spacing:-.05em;color:var(--accent);margin:0;text-transform:uppercase;text-shadow:1px 1px 0 var(--accent-soft),2px 2px 0 var(--accent-soft),3px 3px 0 var(--accent-soft),4px 4px 0 var(--accent-soft),5px 5px 0 var(--accent-soft),6px 6px 0 var(--accent-soft),7px 7px 0 var(--accent-soft),8px 8px 0 var(--accent-soft),9px 9px 0 var(--accent-soft),10px 10px 0 var(--accent-soft),11px 11px 0 var(--accent-soft),12px 12px 0 var(--accent-soft);animation:tfRise .6s 0s cubic-bezier(.2,.8,.3,1) both">38 tools</h1>
+        </div>
+        <div style="width:100%;display:flex;justify-content:center;padding-left:;position:relative;z-index:20">
+          <h1 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(3.6rem,11.4vw,168px);line-height:.84;letter-spacing:-.05em;color:var(--ink);margin:0;text-transform:uppercase;text-shadow:1px 1px 0 var(--line),2px 2px 0 var(--line),3px 3px 0 var(--line),4px 4px 0 var(--line),5px 5px 0 var(--line),6px 6px 0 var(--line),7px 7px 0 var(--line),8px 8px 0 var(--line),9px 9px 0 var(--line),10px 10px 0 var(--line),11px 11px 0 var(--line),12px 12px 0 var(--line),13px 13px 0 var(--line),14px 14px 0 var(--line);animation:tfRise .6s .06s cubic-bezier(.2,.8,.3,1) both">Toolferry</h1>
+        </div>
+        <div style="width:100%;display:flex;justify-content:flex-start;padding-left:28%;position:relative;z-index:10">
+          <h1 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(3rem,8.6vw,124px);line-height:.84;letter-spacing:-.05em;color:var(--ink);margin:0;text-transform:uppercase;text-shadow:1px 1px 0 var(--line),2px 2px 0 var(--line),3px 3px 0 var(--line),4px 4px 0 var(--line),5px 5px 0 var(--line),6px 6px 0 var(--line),7px 7px 0 var(--line),8px 8px 0 var(--line),9px 9px 0 var(--line),10px 10px 0 var(--line),11px 11px 0 var(--line),12px 12px 0 var(--line),13px 13px 0 var(--line),14px 14px 0 var(--line);animation:tfRise .6s .12s cubic-bezier(.2,.8,.3,1) both">One shell</h1>
+        </div>
+      </div>
+
+      <div style="position:absolute;inset:-20px 0;pointer-events:none">
+        <div style="position:absolute;bottom:-12%;left:0;z-index:30;pointer-events:auto;animation:tfFloat 5s ease-in-out infinite">
+          <div style="width:206px;background:var(--surface);border:1px solid var(--line);border-radius:26px;padding:18px;box-shadow:var(--shadow);transform:rotate(-10deg);transition:transform .5s cubic-bezier(.2,.8,.3,1);text-align:left" style-hover="transform:rotate(0deg)">
+            <div style="display:flex;align-items:center;gap:11px;margin-bottom:14px">
+              <span style="width:38px;height:38px;border-radius:11px;border:1px solid var(--line);background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;flex:none">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><line x1="12" y1="3" x2="12" y2="15"></line><polyline points="7 10 12 15 17 10"></polyline><line x1="5" y1="20" x2="19" y2="20"></line></svg>
+              </span>
+              <span style="display:flex;flex-direction:column;gap:2px;min-width:0">
+                <span style="font-size:13.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">workspace-walkthrough</span>
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--muted);white-space:nowrap">MP4 · 1080p</span>
+              </span>
+            </div>
+            <div style="height:5px;border-radius:999px;background:var(--paper2)"><div style="height:100%;width:72%;background:var(--accent);border-radius:999px"></div></div>
+            <div style="display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--muted);margin-top:8px"><span>DOWNLOADING</span><span style="color:var(--accent)">72%</span></div>
+          </div>
+        </div>
+
+        <div style="position:absolute;top:-10%;right:0;z-index:30;pointer-events:auto;animation:tfFloat2 6s 1s ease-in-out infinite">
+          <div style="width:206px;background:var(--surface);border:1px solid var(--line);border-radius:26px;padding:18px;box-shadow:var(--shadow);transform:rotate(10deg);transition:transform .5s cubic-bezier(.2,.8,.3,1);text-align:left" style-hover="transform:rotate(0deg)">
+            <div style="display:flex;align-items:center;gap:11px;margin-bottom:14px">
+              <span style="width:38px;height:38px;border-radius:11px;border:1px solid var(--line);background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;flex:none">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="5" y="3" width="14" height="18" rx="2"></rect><line x1="9" y1="9" x2="15" y2="9"></line><line x1="9" y1="13" x2="15" y2="13"></line></svg>
+              </span>
+              <span style="display:flex;flex-direction:column;gap:2px;min-width:0">
+                <span style="font-size:13.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">proposal-merged.pdf</span>
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--muted);white-space:nowrap">3 files · 24 pages</span>
+              </span>
+            </div>
+            <div style="display:flex;align-items:center;gap:9px">
+              <span style="width:22px;height:22px;border-radius:50%;background:var(--ok);display:grid;place-items:center;flex:none">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.8" stroke-linecap="round"><polyline points="5 12 10 17 19 7"></polyline></svg>
+              </span>
+              <span style="font-size:12.5px;color:var(--ink2)">Done in 4.1s</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="position:absolute;bottom:-6%;left:26%;width:96px;height:96px;z-index:20;color:var(--accent)">
+          <svg viewBox="0 0 100 100" width="100%" height="100%" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><path d="M10,90 C 10,40 40,20 60,50 C 70,65 80,75 95,70"></path><path d="M80,55 L95,70 L85,85"></path></svg>
+        </div>
+        <div style="position:absolute;top:-2%;right:22%;width:96px;height:96px;z-index:20;color:var(--accent)">
+          <svg viewBox="0 0 100 100" width="100%" height="100%" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><path d="M90,10 C 80,60 60,80 40,60 C 20,40 40,20 60,30 C 80,40 70,70 50,80"></path><path d="M65,75 L50,80 L55,65"></path></svg>
+        </div>
+
+        <div style="position:absolute;bottom:-26%;right:6%;z-index:40;pointer-events:auto">
+          <button onClick="{{ goHub }}" style="position:relative;width:136px;height:136px;border-radius:50%;border:0;background:var(--ink);display:grid;place-items:center;box-shadow:var(--shadow);transform:rotate(10deg);cursor:pointer;transition:transform .3s cubic-bezier(.2,.8,.3,1)" style-hover="transform:rotate(10deg) scale(1.06)">
+            <span style="position:absolute;inset:6px;animation:tfSpin 14s linear infinite;display:block">
+              <svg viewBox="0 0 100 100" width="100%" height="100%">
+                <path id="tfCirclePath" d="M 50, 50 m -36, 0 a 36,36 0 1,1 72,0 a 36,36 0 1,1 -72,0" fill="none"></path>
+                <text style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.22em" fill="var(--paper)"><textPath href="#tfCirclePath" startOffset="0%">OPEN THE TOOLBOX • NO ACCOUNT • </textPath></text>
+              </svg>
+            </span>
+            <span style="position:absolute;inset:0;display:grid;place-items:center;color:var(--accent)">
+              <svg viewBox="0 0 100 100" width="38" height="38" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"><path d="M20,80 Q 40,50 30,30 T 80,20"></path><path d="M60,10 L80,20 L70,40"></path></svg>
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div style="position:relative;z-index:15;display:flex;flex-direction:column;align-items:center;gap:20px;margin-top:132px;animation:tfRise .6s .2s cubic-bezier(.2,.8,.3,1) both">
+      <p style="margin:0;font-size:19px;line-height:1.45;color:var(--ink2);max-width:44ch;text-align:center;text-wrap:pretty">Downloaders, converters, PDF and document utilities — every tool in the same calm shell. Nothing to install, nothing kept.</p>
+      <div style="display:flex;gap:12px;align-items:center">
+        <button onClick="{{ goHub }}" style="height:50px;padding:0 26px;border:1px solid var(--ink);background:var(--ink);color:var(--paper);border-radius:999px;font-size:15px;font-weight:500;white-space:nowrap;cursor:pointer;transition:transform .16s cubic-bezier(.2,.8,.3,1)" style-active="transform:scale(.975)">Open tools</button>
+        <button onClick="{{ goYT }}" style="height:50px;padding:0 24px;border:1px solid var(--line2);background:var(--surface);border-radius:999px;font-size:15px;font-weight:500;white-space:nowrap;cursor:pointer;transition:border-color .16s ease" style-hover="border-color:var(--ink2)">Try YouTube Downloader</button>
+      </div>
+    </div>
+  </section>
+
+  <section style="max-width:1240px;margin:0 auto;padding:88px 28px 0">
+    <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2.1fr);gap:56px;align-items:start">
+      <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:34px;line-height:1.02;letter-spacing:-.035em;text-transform:uppercase;margin:0">What you can do</h2>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:28px;border-top:1px solid var(--line);padding-top:28px">
+        <sc-for list="{{ categoryBlurbs }}" as="c" hint-placeholder-count="4">
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted)">{{ c.count }}</div>
+            <div style="font-size:17px;font-weight:600;letter-spacing:-.01em">{{ c.name }}</div>
+            <div style="font-size:14px;line-height:1.5;color:var(--ink2);text-wrap:pretty">{{ c.blurb }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+
+  <section style="max-width:1240px;margin:0 auto;padding:80px 28px 0">
+    <div style="display:flex;align-items:baseline;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:14px;margin-bottom:26px">
+      <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:26px;letter-spacing:-.03em;text-transform:uppercase;margin:0">Featured tools</h2>
+      <button onClick="{{ goHub }}" style="background:none;border:0;padding:0;color:var(--accent);font-size:14px;cursor:pointer">All 38 tools →</button>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px">
+      <sc-for list="{{ featured }}" as="t" hint-placeholder-count="4">
+        <button onClick="{{ t.open }}" style="text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:22px;padding:20px;cursor:pointer;display:flex;flex-direction:column;gap:12px;min-height:150px;box-shadow:var(--shadow);transition:transform .2s cubic-bezier(.2,.8,.3,1),border-color .2s ease" style-hover="transform:translateY(-3px);border-color:var(--line2)">
+          <span style="width:34px;height:34px;border:1px solid var(--line);border-radius:10px;display:grid;place-items:center;color:var(--accent);background:var(--accent-soft)">
+            <sc-if value="{{ t.isDL }}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="12" y1="3" x2="12" y2="15"></line><polyline points="7 10 12 15 17 10"></polyline><line x1="5" y1="20" x2="19" y2="20"></line></svg></sc-if>
+            <sc-if value="{{ t.isMD }}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="3" y="5" width="18" height="14" rx="2"></rect><polyline points="10 9 15 12 10 15 10 9"></polyline></svg></sc-if>
+            <sc-if value="{{ t.isPD }}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="5" y="3" width="14" height="18" rx="2"></rect><line x1="9" y1="9" x2="15" y2="9"></line><line x1="9" y1="13" x2="15" y2="13"></line></svg></sc-if>
+            <sc-if value="{{ t.isDC }}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><polyline points="14 3 6 3 6 21 18 21 18 7 14 3 14 7 18 7"></polyline><line x1="9" y1="16" x2="15" y2="16"></line></svg></sc-if>
+            <sc-if value="{{ t.isUT }}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="3.4"></circle><line x1="12" y1="2.5" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="21.5"></line><line x1="2.5" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="21.5" y2="12"></line></svg></sc-if>
+          </span>
+          <span style="font-size:16px;font-weight:600;letter-spacing:-.01em">{{ t.name }}</span>
+          <span style="font-size:13.5px;line-height:1.45;color:var(--ink2)">{{ t.desc }}</span>
+        </button>
+      </sc-for>
+    </div>
+  </section>
+
+  <section style="max-width:1240px;margin:0 auto;padding:80px 28px 0">
+    <div style="border:1px solid var(--line);border-radius:26px;background:var(--surface);padding:40px 44px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:48px;align-items:center">
+      <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:28px;line-height:1.05;letter-spacing:-.035em;text-transform:uppercase;margin:0">Your files stay yours</h3>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <p style="margin:0;font-size:15.5px;line-height:1.6;color:var(--ink2);text-wrap:pretty">Uploads are processed on your own instance and deleted when the job finishes or after one hour, whichever comes first. Nothing is indexed, resold, or used for training. Share links expire in 24 hours and can be revoked from Job history.</p>
+        <div style="display:flex;gap:22px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--muted)">
+          <span>AUTO-DELETE 1H</span><span>NO ACCOUNT REQUIRED</span><span>LOCAL PROCESSING</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer style="max-width:1240px;margin:96px auto 0;padding:32px 28px 56px;border-top:1px solid var(--line);display:flex;gap:48px;align-items:flex-start">
+    <div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:600;font-size:15px;letter-spacing:-.02em">ToolFerry</div>
+    <div style="display:flex;gap:56px;flex:1">
+      <sc-for list="{{ footerCols }}" as="col" hint-placeholder-count="4">
+        <div style="display:flex;flex-direction:column;gap:9px">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">{{ col.title }}</div>
+          <sc-for list="{{ col.links }}" as="l" hint-placeholder-count="3">
+            <div style="font-size:13.5px;color:var(--ink2)">{{ l }}</div>
+          </sc-for>
+        </div>
+      </sc-for>
+    </div>
+    <div style="font-size:12.5px;color:var(--muted)">© 2026 · Self-hosted build 4.2.0</div>
+  </footer>
+</main>
+</sc-if>
+
+<sc-if value="{{ isHub }}">
+<main data-screen-label="Tools Hub" style="position:relative;z-index:1;max-width:1240px;margin:0 auto;padding:40px 28px 80px;animation:tfFade .28s ease both">
+  <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:32px;margin-bottom:26px">
+    <div>
+      <h1 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(2.4rem,5vw,60px);letter-spacing:-.045em;text-transform:uppercase;text-shadow:1px 1px 0 var(--line),2px 2px 0 var(--line),3px 3px 0 var(--line),4px 4px 0 var(--line),5px 5px 0 var(--line),6px 6px 0 var(--line);margin:0 0 10px">Tools</h1>
+      <p style="margin:0;font-size:15px;color:var(--ink2)">{{ toolCount }} tools · everything runs on your instance</p>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;height:44px;padding:0 14px;border:1px solid var(--line2);border-radius:11px;background:var(--surface);width:340px">
+      <span style="width:13px;height:13px;border:1.5px solid var(--muted);border-radius:50%;display:block;flex:none"></span>
+      <input value="{{ q }}" onChange="{{ onSearch }}" placeholder="Search tools, formats, platforms…" style="border:0;background:transparent;outline:none;flex:1;font-size:14px;color:var(--ink)" />
+      <sc-if value="{{ hasQuery }}"><button onClick="{{ clearSearch }}" style="border:0;background:none;color:var(--muted);cursor:pointer;font-size:16px;line-height:1">×</button></sc-if>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:8px;flex-wrap:wrap;padding-bottom:22px;border-bottom:1px solid var(--line);margin-bottom:26px">
+    <sc-for list="{{ cats }}" as="c" hint-placeholder-count="6">
+      <button onClick="{{ c.pick }}" style="height:34px;padding:0 14px;border:1px solid {{ c.bd }};background:{{ c.bg }};color:{{ c.fg }};border-radius:999px;font-size:13.5px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:7px;transition:background .2s ease,border-color .2s ease,color .2s ease">
+        <span>{{ c.name }}</span><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;opacity:.6">{{ c.n }}</span>
+      </button>
+    </sc-for>
+  </div>
+
+  <sc-if value="{{ showRecent }}">
+  <div style="margin-bottom:34px">
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:12px">Recently used</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <sc-for list="{{ recent }}" as="r" hint-placeholder-count="4">
+        <button onClick="{{ r.open }}" style="display:flex;align-items:center;gap:10px;height:40px;padding:0 14px 0 12px;border:1px solid var(--line);background:var(--surface);border-radius:10px;cursor:pointer;font-size:13.5px;font-weight:500;white-space:nowrap;transition:border-color .18s ease" style-hover="border-color:var(--line2)">
+          <span style="width:6px;height:6px;border-radius:50%;background:var(--accent);display:block"></span>
+          <span>{{ r.name }}</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted)">{{ r.when }}</span>
+        </button>
+      </sc-for>
+    </div>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ hasResults }}" hint-placeholder-val="{{ true }}">
+  <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px">
+    <sc-for list="{{ filtered }}" as="t" hint-placeholder-count="12">
+      <button onClick="{{ t.open }}" style="text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:22px;padding:18px;cursor:pointer;display:flex;flex-direction:column;gap:11px;min-height:152px;animation:tfRise .34s cubic-bezier(.2,.8,.3,1) both;animation-delay:{{ t.delay }};transition:transform .2s cubic-bezier(.2,.8,.3,1),border-color .2s ease,box-shadow .2s ease" style-hover="transform:translateY(-3px);border-color:var(--line2);box-shadow:var(--shadow)">
+        <span style="display:flex;align-items:center;justify-content:space-between;width:100%">
+          <span style="width:32px;height:32px;border:1px solid var(--line);border-radius:9px;display:grid;place-items:center;color:var(--accent);background:var(--accent-soft)">
+            <sc-if value="{{ t.isDL }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="12" y1="3" x2="12" y2="15"></line><polyline points="7 10 12 15 17 10"></polyline><line x1="5" y1="20" x2="19" y2="20"></line></svg></sc-if>
+            <sc-if value="{{ t.isMD }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="3" y="5" width="18" height="14" rx="2"></rect><polyline points="10 9 15 12 10 15 10 9"></polyline></svg></sc-if>
+            <sc-if value="{{ t.isPD }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="5" y="3" width="14" height="18" rx="2"></rect><line x1="9" y1="9" x2="15" y2="9"></line><line x1="9" y1="13" x2="15" y2="13"></line></svg></sc-if>
+            <sc-if value="{{ t.isDC }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><polyline points="14 3 6 3 6 21 18 21 18 7 14 3 14 7 18 7"></polyline><line x1="9" y1="16" x2="15" y2="16"></line></svg></sc-if>
+            <sc-if value="{{ t.isUT }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="3.4"></circle><line x1="12" y1="2.5" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="21.5"></line><line x1="2.5" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="21.5" y2="12"></line></svg></sc-if>
+          </span>
+          <sc-if value="{{ t.binary }}"><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.06em;color:var(--muted);border:1px solid var(--line);border-radius:5px;padding:2px 6px;white-space:nowrap">NEEDS BINARY</span></sc-if>
+        </span>
+        <span style="font-size:15.5px;font-weight:600;letter-spacing:-.01em;line-height:1.2">{{ t.name }}</span>
+        <span style="font-size:13px;line-height:1.45;color:var(--ink2)">{{ t.desc }}</span>
+      </button>
+    </sc-for>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ noResults }}">
+  <div style="border:1px dashed var(--line2);border-radius:24px;padding:72px 32px;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;animation:tfFade .25s ease both">
+    <div style="width:56px;height:56px;border:1.5px solid var(--line2);border-radius:50%;display:grid;place-items:center;color:var(--muted)">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"></circle><line x1="16" y1="16" x2="21" y2="21"></line></svg>
+    </div>
+    <div style="font-size:19px;font-weight:600;letter-spacing:-.015em">No tool matches “{{ q }}”</div>
+    <div style="font-size:14.5px;color:var(--ink2);max-width:44ch;line-height:1.5">Try a format (mp4, webp), a platform (tiktok), or a verb (merge, compress). You can also request a tool — the queue is public.</div>
+    <div style="display:flex;gap:10px;margin-top:6px">
+      <button onClick="{{ clearSearch }}" style="height:38px;padding:0 16px;border:1px solid var(--ink);background:var(--ink);color:var(--paper);border-radius:999px;font-size:13.5px;cursor:pointer">Clear search</button>
+      <button style="height:38px;padding:0 16px;border:1px solid var(--line2);background:var(--surface);border-radius:999px;font-size:13.5px;cursor:pointer">Request a tool</button>
+    </div>
+  </div>
+  </sc-if>
+</main>
+</sc-if>
+
+<sc-if value="{{ isTool }}">
+<main data-screen-label="Tool shell" style="position:relative;z-index:1;animation:tfFade .26s ease both">
+  <div style="position:sticky;top:62px;z-index:30;background:color-mix(in oklab, var(--paper) 92%, transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)">
+    <div style="max-width:1240px;margin:0 auto;padding:12px 28px;display:flex;align-items:center;gap:16px">
+      <button onClick="{{ goHub }}" style="width:32px;height:32px;border:1px solid var(--line2);border-radius:9px;background:var(--surface);cursor:pointer;display:grid;place-items:center" title="Back to tools">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><polyline points="14 5 8 12 14 19"></polyline></svg>
+      </button>
+      <span style="width:32px;height:32px;border:1px solid var(--line);border-radius:9px;display:grid;place-items:center;color:var(--accent);background:var(--accent-soft);animation:tfPop .3s cubic-bezier(.2,.8,.3,1) both">
+        <sc-if value="{{ tool.isDL }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="12" y1="3" x2="12" y2="15"></line><polyline points="7 10 12 15 17 10"></polyline><line x1="5" y1="20" x2="19" y2="20"></line></svg></sc-if>
+        <sc-if value="{{ tool.isMD }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="3" y="5" width="18" height="14" rx="2"></rect><polyline points="10 9 15 12 10 15 10 9"></polyline></svg></sc-if>
+        <sc-if value="{{ tool.isPD }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="5" y="3" width="14" height="18" rx="2"></rect><line x1="9" y1="9" x2="15" y2="9"></line><line x1="9" y1="13" x2="15" y2="13"></line></svg></sc-if>
+        <sc-if value="{{ tool.isDC }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><polyline points="14 3 6 3 6 21 18 21 18 7 14 3 14 7 18 7"></polyline><line x1="9" y1="16" x2="15" y2="16"></line></svg></sc-if>
+        <sc-if value="{{ tool.isUT }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="3.4"></circle><line x1="12" y1="2.5" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="21.5"></line><line x1="2.5" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="21.5" y2="12"></line></svg></sc-if>
+      </span>
+      <div style="display:flex;flex-direction:column;gap:1px;min-width:0">
+        <div style="font-size:15px;font-weight:600;letter-spacing:-.015em">{{ tool.name }}</div>
+        <div style="font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ tool.desc }}</div>
+      </div>
+      <div style="flex:1"></div>
+      <sc-if value="{{ depsReady }}">
+        <span style="display:flex;align-items:center;gap:7px;height:28px;padding:0 11px;border:1px solid var(--line);border-radius:999px;font-size:12px;color:var(--ink2);background:var(--surface);white-space:nowrap">
+          <span style="width:6px;height:6px;border-radius:50%;background:var(--ok);display:block"></span>{{ tool.deps }} ready
+        </span>
+      </sc-if>
+      <button style="height:32px;padding:0 12px;border:1px solid var(--line2);border-radius:9px;background:var(--surface);font-size:13px;cursor:pointer">Presets</button>
+    </div>
+  </div>
+
+  <sc-if value="{{ preparing }}">
+  <div style="max-width:1240px;margin:0 auto;padding:120px 28px;display:flex;flex-direction:column;align-items:center;gap:18px;text-align:center;animation:tfFade .3s ease both">
+    <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:26px;font-weight:500;letter-spacing:-.02em">Preparing {{ tool.name }}…</div>
+    <div style="font-size:14.5px;color:var(--ink2);max-width:42ch;line-height:1.5">Fetching {{ tool.deps }} on first use. This happens once per instance — about 15 seconds.</div>
+    <div style="width:420px;height:4px;border-radius:999px;background:var(--line);overflow:hidden;margin-top:6px">
+      <div style="height:100%;width:{{ prepPct }}%;background:var(--accent);border-radius:999px;transition:width .3s linear"></div>
+    </div>
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--muted)">{{ prepPct }}% · verifying checksum</div>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ ready }}" hint-placeholder-val="{{ true }}">
+  <div style="max-width:1240px;margin:0 auto;padding:30px 28px 140px">
+    <div style="display:flex;gap:26px;margin-bottom:26px;border-bottom:1px solid var(--line);padding-bottom:14px">
+      <sc-for list="{{ steps }}" as="s" hint-placeholder-count="4">
+        <div style="display:flex;align-items:center;gap:9px;position:relative;padding-bottom:14px;margin-bottom:-15px;border-bottom:2px solid {{ s.bar }};transition:border-color .3s ease">
+          <span style="width:20px;height:20px;border-radius:50%;border:1.5px solid {{ s.dot }};color:{{ s.dotFg }};background:{{ s.dotBg }};display:grid;place-items:center;font-family:'IBM Plex Mono',monospace;font-size:11px;transition:all .3s ease">{{ s.n }}</span>
+          <span style="font-size:13.5px;font-weight:500;color:{{ s.fg }};transition:color .3s ease">{{ s.label }}</span>
+        </div>
+      </sc-for>
+    </div>
+
+    <div style="display:grid;grid-template-columns:{{ gridCols }};gap:22px;align-items:start">
+      <div style="display:flex;flex-direction:column;gap:18px;min-width:0">
+
+        <sc-if value="{{ isYT }}">
+          <div style="border:1px solid var(--line);border-radius:24px;background:var(--surface);padding:22px;box-shadow:var(--shadow)">
+            <div style="font-size:13px;font-weight:600;margin-bottom:10px">Video or playlist URL</div>
+            <div style="display:flex;gap:10px">
+              <div style="flex:1;display:flex;align-items:center;gap:10px;height:48px;padding:0 14px;border:1px solid {{ urlBd }};border-radius:11px;background:var(--paper);transition:border-color .2s ease">
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted)">https://</span>
+                <input value="{{ url }}" onChange="{{ onUrl }}" placeholder="youtube.com/watch?v=…" style="flex:1;border:0;background:transparent;outline:none;font-size:14.5px;color:var(--ink)" />
+              </div>
+              <button onClick="{{ pasteSample }}" style="height:48px;padding:0 18px;border:1px solid var(--line2);background:var(--surface);border-radius:11px;font-size:14px;cursor:pointer">Paste</button>
+            </div>
+            <div style="display:flex;gap:14px;margin-top:10px;font-size:12.5px;color:var(--muted)">
+              <span>Playlists supported up to 25 items</span><span>·</span><span>Age-restricted needs cookies file</span>
+            </div>
+          </div>
+
+          <sc-if value="{{ hasUrl }}">
+          <div style="border:1px solid var(--line);border-radius:24px;background:var(--surface);overflow:hidden;box-shadow:var(--shadow);animation:tfRise .3s cubic-bezier(.2,.8,.3,1) both">
+            <div style="display:flex;gap:16px;padding:16px">
+              <div style="width:196px;height:110px;border-radius:10px;flex:none;background:repeating-linear-gradient(115deg, var(--paper2) 0 8px, var(--paper) 8px 16px);border:1px solid var(--line);position:relative;display:grid;place-items:center">
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:var(--muted)">thumbnail</span>
+                <span style="position:absolute;right:7px;bottom:7px;font-family:'IBM Plex Mono',monospace;font-size:10px;background:var(--ink);color:var(--paper);border-radius:4px;padding:1px 5px">12:41</span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:6px;min-width:0;padding-top:2px">
+                <div style="font-size:16.5px;font-weight:600;letter-spacing:-.015em;line-height:1.25">Building a quiet workspace — full walkthrough</div>
+                <div style="font-size:13.5px;color:var(--ink2)">Northline Studio · 84K views · uploaded 3 weeks ago</div>
+                <div style="display:flex;gap:7px;margin-top:6px;flex-wrap:wrap">
+                  <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;border:1px solid var(--line);border-radius:5px;padding:2px 7px;color:var(--ink2)">1080p60</span>
+                  <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;border:1px solid var(--line);border-radius:5px;padding:2px 7px;color:var(--ink2)">AV1 + OPUS</span>
+                  <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;border:1px solid var(--line);border-radius:5px;padding:2px 7px;color:var(--ink2)">SUBS: EN, ES</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style="border:1px solid var(--line);border-radius:24px;background:var(--surface);padding:22px;box-shadow:var(--shadow)">
+            <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:12px">
+              <div style="font-size:13px;font-weight:600">Quality</div>
+              <div style="font-size:12.5px;color:var(--muted)">Estimated sizes for 12:41</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <sc-for list="{{ qualities }}" as="qq" hint-placeholder-count="4">
+                <button onClick="{{ qq.pick }}" style="display:flex;align-items:center;gap:13px;width:100%;text-align:left;padding:13px 15px;border:1px solid {{ qq.bd }};background:{{ qq.bg }};border-radius:11px;cursor:pointer;transition:border-color .18s ease,background .18s ease">
+                  <span style="width:16px;height:16px;border-radius:50%;border:1.5px solid {{ qq.dot }};display:grid;place-items:center;flex:none">
+                    <sc-if value="{{ qq.on }}"><span style="width:8px;height:8px;border-radius:50%;background:var(--accent);display:block;animation:tfPop .22s ease both"></span></sc-if>
+                  </span>
+                  <span style="font-size:14.5px;font-weight:500;flex:none;width:110px">{{ qq.name }}</span>
+                  <span style="font-size:13px;color:var(--ink2);flex:1">{{ qq.note }}</span>
+                  <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted)">{{ qq.size }}</span>
+                </button>
+              </sc-for>
+            </div>
+            <div style="height:1px;background:var(--line);margin:20px 0"></div>
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:16px">
+              <div style="display:flex;flex-direction:column;gap:3px">
+                <div style="font-size:13px;font-weight:600">Extract audio</div>
+                <div style="font-size:12.5px;color:var(--muted)">Saves an audio-only file alongside the video</div>
+              </div>
+              <div style="display:flex;gap:6px">
+                <sc-for list="{{ audioFormats }}" as="a" hint-placeholder-count="4">
+                  <button onClick="{{ a.pick }}" style="height:32px;padding:0 13px;border:1px solid {{ a.bd }};background:{{ a.bg }};color:{{ a.fg }};border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;transition:all .18s cubic-bezier(.2,.8,.3,1)">{{ a.name }}</button>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+
+          <div style="border:1px solid var(--line);border-radius:24px;background:var(--surface);box-shadow:var(--shadow)">
+            <button onClick="{{ toggleAdvanced }}" style="width:100%;display:flex;align-items:center;justify-content:space-between;padding:18px 22px;background:none;border:0;cursor:pointer;text-align:left">
+              <span style="font-size:13px;font-weight:600">Trim, subtitles &amp; filename</span>
+              <span style="font-size:12.5px;color:var(--muted)">{{ advancedLabel }}</span>
+            </button>
+            <sc-if value="{{ advanced }}">
+            <div style="padding:0 22px 22px;display:flex;flex-direction:column;gap:16px;animation:tfRise .26s ease both">
+              <div style="display:flex;gap:14px;align-items:center">
+                <span style="font-size:13.5px;width:150px;color:var(--ink2)">Trim range</span>
+                <input value="00:01:12" style="width:110px;height:38px;padding:0 12px;border:1px solid var(--line2);border-radius:9px;background:var(--paper);font-family:'IBM Plex Mono',monospace;font-size:13px;outline:none;color:var(--ink)" />
+                <span style="color:var(--muted)">→</span>
+                <input value="00:04:30" style="width:110px;height:38px;padding:0 12px;border:1px solid var(--line2);border-radius:9px;background:var(--paper);font-family:'IBM Plex Mono',monospace;font-size:13px;outline:none;color:var(--ink)" />
+                <span style="font-size:12.5px;color:var(--muted)">3:18 of 12:41</span>
+              </div>
+              <div style="display:flex;gap:14px;align-items:center">
+                <span style="font-size:13.5px;width:150px;color:var(--ink2)">Subtitles</span>
+                <div style="display:flex;gap:6px">
+                  <span style="height:32px;padding:0 12px;border:1px solid var(--accent);background:var(--accent-soft);color:var(--accent);border-radius:8px;font-size:13px;display:grid;place-items:center">English (.srt)</span>
+                  <span style="height:32px;padding:0 12px;border:1px solid var(--line2);border-radius:8px;font-size:13px;display:grid;place-items:center;color:var(--ink2)">Español</span>
+                  <span style="height:32px;padding:0 12px;border:1px solid var(--line2);border-radius:8px;font-size:13px;display:grid;place-items:center;color:var(--ink2)">Burn in</span>
+                </div>
+              </div>
+              <div style="display:flex;gap:14px;align-items:center">
+                <span style="font-size:13.5px;width:150px;color:var(--ink2)">Filename template</span>
+                <input value="{title} — {channel} [{quality}]" style="flex:1;height:38px;padding:0 12px;border:1px solid var(--line2);border-radius:9px;background:var(--paper);font-family:'IBM Plex Mono',monospace;font-size:12.5px;outline:none;color:var(--ink)" />
+              </div>
+            </div>
+            </sc-if>
+          </div>
+
+          <div style="border:1px solid var(--line);border-radius:24px;background:var(--surface);box-shadow:var(--shadow);overflow:hidden">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 22px;border-bottom:1px solid var(--line)">
+              <div style="font-size:13px;font-weight:600">Batch queue <span style="color:var(--muted);font-weight:400">· 3 of 25</span></div>
+              <button style="background:none;border:0;color:var(--accent);font-size:13px;cursor:pointer">Add URLs</button>
+            </div>
+            <sc-for list="{{ queue }}" as="j" hint-placeholder-count="3">
+              <div style="display:flex;align-items:center;gap:14px;padding:13px 22px;border-bottom:1px solid var(--line)">
+                <span style="width:48px;height:28px;border-radius:5px;background:repeating-linear-gradient(115deg, var(--paper2) 0 6px, var(--paper) 6px 12px);border:1px solid var(--line);flex:none"></span>
+                <span style="font-size:13.5px;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ j.title }}</span>
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--muted)">{{ j.meta }}</span>
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.05em;border:1px solid {{ j.bd }};color:{{ j.fg }};border-radius:5px;padding:2px 7px">{{ j.status }}</span>
+              </div>
+            </sc-for>
+          </div>
+          </sc-if>
+
+          <sc-if value="{{ noUrl }}">
+          <div style="border:1px dashed var(--line2);border-radius:24px;padding:64px 32px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center">
+            <div style="width:120px;height:68px;border-radius:8px;background:repeating-linear-gradient(115deg, var(--paper2) 0 8px, var(--paper) 8px 16px);border:1px solid var(--line);display:grid;place-items:center;color:var(--muted)">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><polyline points="10 8 16 12 10 16 10 8"></polyline></svg>
+            </div>
+            <div style="font-size:17px;font-weight:600;letter-spacing:-.015em">Paste a link to begin</div>
+            <div style="font-size:14px;color:var(--ink2);max-width:40ch;line-height:1.5">A single video, a playlist, or a channel tab. We fetch the title, duration and available formats before anything downloads.</div>
+          </div>
+          </sc-if>
+        </sc-if>
+
+        <sc-if value="{{ isSocial }}">
+          <div style="border:1px solid var(--line);border-radius:24px;background:var(--surface);padding:22px;box-shadow:var(--shadow)">
+            <div style="font-size:13px;font-weight:600;margin-bottom:10px">Paste any link</div>
+            <div style="display:flex;gap:10px">
+              <div style="flex:1;display:flex;align-items:center;gap:12px;height:52px;padding:0 16px;border:1px solid {{ urlBd }};border-radius:11px;background:var(--paper)">
+                <input value="{{ url }}" onChange="{{ onUrl }}" placeholder="tiktok.com/@user/video/… · instagram.com/reel/… · x.com/…" style="flex:1;border:0;background:transparent;outline:none;font-size:14.5px;color:var(--ink)" />
+                <sc-if value="{{ hasUrl }}"><span style="display:flex;align-items:center;gap:7px;height:28px;padding:0 11px;border:1px solid var(--accent);background:var(--accent-soft);color:var(--accent);border-radius:999px;font-size:12px;font-weight:500;animation:tfPop .25s ease both">Detected · TikTok</span></sc-if>
+              </div>
+              <button onClick="{{ pasteSample }}" style="height:52px;padding:0 20px;border:1px solid var(--ink);background:var(--ink);color:var(--paper);border-radius:11px;font-size:14px;cursor:pointer">Detect</button>
+            </div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:16px">
+              <sc-for list="{{ platforms }}" as="p" hint-placeholder-count="9">
+                <span style="height:28px;padding:0 11px;border:1px solid {{ p.bd }};background:{{ p.bg }};color:{{ p.fg }};border-radius:7px;font-size:12.5px;display:grid;place-items:center;transition:all .2s ease">{{ p.name }}</span>
+              </sc-for>
+            </div>
+          </div>
+          <sc-if value="{{ hasUrl }}">
+          <div style="border:1px solid var(--line);border-radius:24px;background:var(--surface);padding:22px;box-shadow:var(--shadow);animation:tfRise .3s ease both">
+            <div style="font-size:13px;font-weight:600;margin-bottom:12px">Format</div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <sc-for list="{{ socialFormats }}" as="qq" hint-placeholder-count="4">
+                <button onClick="{{ qq.pick }}" style="display:flex;align-items:center;gap:13px;width:100%;text-align:left;padding:13px 15px;border:1px solid {{ qq.bd }};background:{{ qq.bg }};border-radius:11px;cursor:pointer;transition:all .18s ease">
+                  <span style="width:16px;height:16px;border-radius:50%;border:1.5px solid {{ qq.dot }};display:grid;place-items:center;flex:none"><sc-if value="{{ qq.on }}"><span style="width:8px;height:8px;border-radius:50%;background:var(--accent);display:block"></span></sc-if></span>
+                  <span style="font-size:14.5px;font-weight:500;width:150px;flex:none">{{ qq.name }}</span>
+                  <span style="font-size:13px;color:var(--ink2);flex:1">{{ qq.note }}</span>
+                  <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted)">{{ qq.size }}</span>
+                </button>
+              </sc-for>
+            </div>
+          </div>
+          </sc-if>
+          <sc-if value="{{ noUrl }}">
+          <div style="border:1px dashed var(--line2);border-radius:24px;padding:60px 32px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:12px">
+            <div style="display:flex;gap:6px">
+              <span style="width:26px;height:38px;border-radius:5px;border:1px solid var(--line2);background:var(--paper2);display:block"></span>
+              <span style="width:52px;height:38px;border-radius:5px;border:1px solid var(--line2);background:var(--paper2);display:block"></span>
+              <span style="width:38px;height:38px;border-radius:5px;border:1px solid var(--line2);background:var(--paper2);display:block"></span>
+            </div>
+            <div style="font-size:17px;font-weight:600;letter-spacing:-.015em">One field, nine platforms</div>
+            <div style="font-size:14px;color:var(--ink2);max-width:42ch;line-height:1.5">Drop in a link and ToolFerry works out the platform, resolution and whether audio is separate. Not affiliated with any platform.</div>
+          </div>
+          </sc-if>
+        </sc-if>
+
+        <sc-if value="{{ isUpload }}">
+          <div onDragOver="{{ onDragOver }}" onDragLeave="{{ onDragLeave }}" onDrop="{{ onDrop }}" onClick="{{ addFile }}" style="border:1.5px dashed {{ dropBd }};background:{{ dropBg }};border-radius:24px;padding:{{ dropPad }};display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;cursor:pointer;transition:border-color .2s ease,background .2s ease,padding .25s cubic-bezier(.2,.8,.3,1)">
+            <div style="width:44px;height:44px;border:1.5px solid var(--line2);border-radius:12px;display:grid;place-items:center;color:var(--accent);background:var(--surface)">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="12" y1="20" x2="12" y2="8"></line><polyline points="7 13 12 8 17 13"></polyline><line x1="5" y1="4" x2="19" y2="4"></line></svg>
+            </div>
+            <div style="font-size:17px;font-weight:600;letter-spacing:-.015em">{{ tool.emptyTitle }}</div>
+            <div style="font-size:14px;color:var(--ink2);max-width:46ch;line-height:1.5">{{ tool.empty }}</div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--muted);margin-top:2px">{{ tool.accepts }} · MAX 2 GB PER FILE</div>
+          </div>
+
+          <sc-if value="{{ hasFiles }}">
+          <div style="border:1px solid var(--line);border-radius:24px;background:var(--surface);box-shadow:var(--shadow);overflow:hidden;animation:tfRise .28s ease both">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:15px 20px;border-bottom:1px solid var(--line)">
+              <div style="font-size:13px;font-weight:600">{{ fileCountLabel }}</div>
+              <div style="font-size:12.5px;color:var(--muted)">{{ reorderHint }}</div>
+            </div>
+            <sc-for list="{{ files }}" as="f" hint-placeholder-count="3">
+              <div style="display:flex;align-items:center;gap:13px;padding:12px 20px;border-bottom:1px solid var(--line);animation:tfSlideIn .26s cubic-bezier(.2,.8,.3,1) both">
+                <span style="display:flex;flex-direction:column;gap:2.5px;cursor:grab;flex:none;padding:4px 2px" title="Drag to reorder">
+                  <span style="width:12px;height:1.5px;background:var(--line2);display:block"></span>
+                  <span style="width:12px;height:1.5px;background:var(--line2);display:block"></span>
+                  <span style="width:12px;height:1.5px;background:var(--line2);display:block"></span>
+                </span>
+                <span style="width:34px;height:34px;border-radius:8px;border:1px solid var(--line);background:repeating-linear-gradient(115deg, var(--paper2) 0 6px, var(--paper) 6px 12px);flex:none"></span>
+                <span style="display:flex;flex-direction:column;gap:2px;flex:1;min-width:0">
+                  <span style="font-size:13.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ f.name }}</span>
+                  <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted)">{{ f.meta }}</span>
+                </span>
+                <button onClick="{{ f.up }}" style="width:26px;height:26px;border:1px solid var(--line);background:var(--surface);border-radius:7px;cursor:pointer;color:var(--ink2);font-size:11px">↑</button>
+                <button onClick="{{ f.down }}" style="width:26px;height:26px;border:1px solid var(--line);background:var(--surface);border-radius:7px;cursor:pointer;color:var(--ink2);font-size:11px">↓</button>
+                <button onClick="{{ f.remove }}" style="width:26px;height:26px;border:1px solid var(--line);background:var(--surface);border-radius:7px;cursor:pointer;color:var(--muted);font-size:13px;line-height:1">×</button>
+              </div>
+            </sc-for>
+          </div>
+          </sc-if>
+        </sc-if>
+
+        <sc-if value="{{ isQR }}">
+          <div style="border:1px solid var(--line);border-radius:24px;background:var(--surface);padding:22px;box-shadow:var(--shadow)">
+            <div style="display:flex;gap:4px;padding:3px;background:var(--paper2);border-radius:10px;width:fit-content;margin-bottom:18px">
+              <sc-for list="{{ qrTabs }}" as="t2" hint-placeholder-count="2">
+                <button onClick="{{ t2.pick }}" style="height:32px;padding:0 18px;border:0;border-radius:8px;background:{{ t2.bg }};color:{{ t2.fg }};font-size:13.5px;font-weight:500;cursor:pointer;box-shadow:{{ t2.sh }};transition:all .2s cubic-bezier(.2,.8,.3,1)">{{ t2.name }}</button>
+              </sc-for>
+            </div>
+            <div style="font-size:13px;font-weight:600;margin-bottom:9px">Content</div>
+            <textarea onChange="{{ onQrText }}" style="width:100%;height:96px;padding:13px 14px;border:1px solid var(--line2);border-radius:11px;background:var(--paper);font-family:'IBM Plex Mono',monospace;font-size:13px;resize:none;outline:none;color:var(--ink);line-height:1.5">{{ qrText }}</textarea>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px">
+              <div>
+                <div style="font-size:12.5px;color:var(--ink2);margin-bottom:8px">Error correction</div>
+                <div style="display:flex;gap:6px">
+                  <sc-for list="{{ qrEcc }}" as="e" hint-placeholder-count="4">
+                    <button onClick="{{ e.pick }}" style="flex:1;height:34px;border:1px solid {{ e.bd }};background:{{ e.bg }};color:{{ e.fg }};border-radius:8px;font-family:'IBM Plex Mono',monospace;font-size:12.5px;cursor:pointer;transition:all .18s ease">{{ e.name }}</button>
+                  </sc-for>
+                </div>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;font-size:12.5px;color:var(--ink2);margin-bottom:8px"><span>Size</span><span style="font-family:'IBM Plex Mono',monospace">{{ qrSize }} px</span></div>
+                <input type="range" min="256" max="2048" step="64" value="{{ qrSize }}" onChange="{{ onQrSize }}" style="width:100%;accent-color:var(--accent);height:34px" />
+              </div>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isGeneric }}">
+          <div style="border:1px dashed var(--line2);border-radius:24px;padding:56px 32px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;background:var(--surface)">
+            <div style="width:44px;height:44px;border:1.5px solid var(--line2);border-radius:12px;display:grid;place-items:center;color:var(--accent);background:var(--paper)">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="12" y1="19" x2="12" y2="7"></line><polyline points="7 12 12 7 17 12"></polyline></svg>
+            </div>
+            <div style="font-size:17px;font-weight:600;letter-spacing:-.015em">{{ tool.emptyTitle }}</div>
+            <div style="font-size:14px;color:var(--ink2);max-width:46ch;line-height:1.5">{{ tool.empty }}</div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--muted);margin-top:2px">{{ tool.accepts }}</div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ hasOptions }}">
+        <div style="border:1px solid var(--line);border-radius:24px;background:var(--surface);padding:22px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:20px">
+          <sc-for list="{{ optRows }}" as="row" hint-placeholder-count="2">
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div style="display:flex;align-items:baseline;justify-content:space-between">
+                <div style="font-size:13px;font-weight:600">{{ row.label }}</div>
+                <div style="font-size:12.5px;color:var(--muted)">{{ row.hint }}</div>
+              </div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <sc-for list="{{ row.choices }}" as="ch" hint-placeholder-count="3">
+                  <button onClick="{{ ch.pick }}" style="height:38px;padding:0 16px;border:1px solid {{ ch.bd }};background:{{ ch.bg }};color:{{ ch.fg }};border-radius:999px;font-size:13.5px;font-weight:500;cursor:pointer;transition:all .18s cubic-bezier(.2,.8,.3,1)">{{ ch.name }}</button>
+                </sc-for>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+        </sc-if>
+
+        <sc-if value="{{ hasTimeline }}">
+        <div style="border:1px solid var(--line);border-radius:24px;background:var(--surface);padding:22px;box-shadow:var(--shadow)">
+          <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:14px">
+            <div style="font-size:13px;font-weight:600">Trim range</div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted)">00:01:12 → 00:04:30 · 3:18 selected</div>
+          </div>
+          <div style="position:relative;height:56px;border-radius:10px;background:repeating-linear-gradient(90deg, var(--paper2) 0 3px, var(--paper) 3px 6px);border:1px solid var(--line);overflow:hidden">
+            <div style="position:absolute;left:14%;right:32%;top:0;bottom:0;background:var(--accent-soft);border-left:3px solid var(--accent);border-right:3px solid var(--accent)"></div>
+            <div style="position:absolute;left:14%;top:50%;transform:translate(-50%,-50%);width:10px;height:26px;border-radius:4px;background:var(--accent);cursor:ew-resize"></div>
+            <div style="position:absolute;left:68%;top:50%;transform:translate(-50%,-50%);width:10px;height:26px;border-radius:4px;background:var(--accent);cursor:ew-resize"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--muted);margin-top:7px"><span>00:00</span><span>03:10</span><span>06:20</span><span>09:31</span><span>12:41</span></div>
+        </div>
+        </sc-if>
+      </div>
+
+      <sc-if value="{{ hasAside }}">
+      <aside style="display:flex;flex-direction:column;gap:16px;position:sticky;top:150px">
+        <div style="border:1px solid var(--line);border-radius:24px;background:var(--surface);overflow:hidden;box-shadow:var(--shadow)">
+          <div style="padding:13px 16px;border-bottom:1px solid var(--line);font-size:12.5px;font-weight:600">{{ asideTitle }}</div>
+          <div style="padding:16px;display:flex;flex-direction:column;gap:12px">
+            <div style="aspect-ratio:{{ asideRatio }};border-radius:10px;border:1px solid var(--line);background:repeating-linear-gradient(115deg, var(--paper2) 0 8px, var(--paper) 8px 16px);display:grid;place-items:center">
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted)">{{ asideSlot }}</span>
+            </div>
+            <sc-for list="{{ asideStats }}" as="s2" hint-placeholder-count="3">
+              <div style="display:flex;justify-content:space-between;font-size:12.5px">
+                <span style="color:var(--muted)">{{ s2.k }}</span><span style="font-family:'IBM Plex Mono',monospace;color:var(--ink2)">{{ s2.v }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+        <div style="border:1px solid var(--line);border-radius:24px;background:var(--paper2);padding:16px;font-size:12.5px;line-height:1.55;color:var(--ink2)">{{ asideNote }}</div>
+      </aside>
+      </sc-if>
+    </div>
+  </div>
+
+  <div style="position:fixed;left:0;right:0;bottom:0;z-index:35;border-top:1px solid var(--line);background:color-mix(in oklab, var(--paper) 92%, transparent);backdrop-filter:blur(14px)">
+    <sc-if value="{{ jobRunning }}">
+      <div style="height:3px;background:var(--line)"><div style="height:100%;width:{{ pct }}%;background:var(--accent);transition:width .25s linear"></div></div>
+    </sc-if>
+    <div style="max-width:1240px;margin:0 auto;padding:14px 28px;display:flex;align-items:center;gap:16px">
+      <sc-if value="{{ jobIdle }}">
+        <span style="font-size:13px;color:var(--muted);white-space:nowrap">{{ readyLine }}</span>
+      </sc-if>
+      <sc-if value="{{ jobRunning }}">
+        <span style="display:flex;align-items:center;gap:12px;min-width:0">
+          <span style="width:26px;height:26px;border-radius:7px;border:1px solid var(--line);background:repeating-linear-gradient(115deg, var(--paper2) 0 5px, var(--paper) 5px 10px);flex:none"></span>
+          <span style="font-size:13.5px;font-weight:500">{{ jobLabel }}</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--accent)">{{ pct }}%</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted)">ETA {{ eta }}</span>
+        </span>
+      </sc-if>
+      <sc-if value="{{ jobDone }}">
+        <span style="display:flex;align-items:center;gap:11px;animation:tfPop .32s cubic-bezier(.2,.8,.3,1) both">
+          <span style="width:24px;height:24px;border-radius:50%;background:var(--ok);display:grid;place-items:center;flex:none">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.6" stroke-linecap="round"><polyline points="5 12 10 17 19 7"></polyline></svg>
+          </span>
+          <span style="font-size:13.5px;font-weight:500">{{ doneLabel }}</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted)">{{ doneMeta }}</span>
+        </span>
+      </sc-if>
+      <div style="flex:1"></div>
+      <sc-if value="{{ jobDone }}">
+        <button style="display:flex;align-items:center;gap:9px;height:40px;padding:0 14px;border:1px solid var(--line2);background:var(--surface);border-radius:999px;font-size:13.5px;cursor:pointer">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--muted)">tf.link/9xQ2</span><span style="color:var(--accent)">Copy</span>
+        </button>
+      </sc-if>
+      <sc-if value="{{ jobRunning }}">
+        <button onClick="{{ cancelJob }}" style="height:40px;padding:0 18px;border:1px solid var(--line2);background:var(--surface);border-radius:999px;font-size:13.5px;white-space:nowrap;cursor:pointer">Cancel</button>
+      </sc-if>
+      <button onClick="{{ primaryAction }}" style="height:40px;padding:0 22px;border:1px solid var(--ink);background:{{ ctaBg }};color:{{ ctaFg }};border-radius:999px;font-size:14px;font-weight:500;white-space:nowrap;cursor:pointer;transition:transform .16s cubic-bezier(.2,.8,.3,1)" style-active="transform:scale(.97)">{{ ctaLabel }}</button>
+    </div>
+  </div>
+</sc-if>
+</main>
+</sc-if>
+
+<sc-if value="{{ isHistory }}">
+<main data-screen-label="Job history" style="position:relative;z-index:1;max-width:1240px;margin:0 auto;padding:40px 28px 90px;animation:tfFade .28s ease both">
+  <h1 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(2.2rem,4.4vw,52px);letter-spacing:-.045em;text-transform:uppercase;text-shadow:1px 1px 0 var(--line),2px 2px 0 var(--line),3px 3px 0 var(--line),4px 4px 0 var(--line),5px 5px 0 var(--line),6px 6px 0 var(--line);margin:0 0 10px">Job history</h1>
+  <p style="margin:0 0 26px;font-size:15px;color:var(--ink2)">Files are removed one hour after completion. Pin a job to keep it for seven days.</p>
+  <div style="border:1px solid var(--line);border-radius:24px;background:var(--surface);overflow:hidden;box-shadow:var(--shadow)">
+    <div style="display:grid;grid-template-columns:1.9fr .9fr .7fr .7fr 120px;gap:16px;padding:12px 20px;border-bottom:1px solid var(--line);font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.08em;color:var(--muted)">
+      <span>OUTPUT</span><span>TOOL</span><span>SIZE</span><span>WHEN</span><span>STATE</span>
+    </div>
+    <sc-for list="{{ jobs }}" as="j" hint-placeholder-count="6">
+      <div style="display:grid;grid-template-columns:1.9fr .9fr .7fr .7fr 120px;gap:16px;padding:14px 20px;border-bottom:1px solid var(--line);align-items:center;font-size:13.5px">
+        <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500">{{ j.name }}</span>
+        <span style="color:var(--ink2)">{{ j.tool }}</span>
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink2)">{{ j.size }}</span>
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted)">{{ j.when }}</span>
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;border:1px solid {{ j.bd }};color:{{ j.fg }};border-radius:5px;padding:2px 7px;justify-self:start">{{ j.state }}</span>
+      </div>
+    </sc-for>
+  </div>
+</main>
+</sc-if>
+
+<sc-if value="{{ isAdmin }}">
+<main data-screen-label="Admin" style="position:relative;z-index:1;max-width:1240px;margin:0 auto;padding:40px 28px 90px;animation:tfFade .28s ease both">
+  <h1 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(2.2rem,4.4vw,52px);letter-spacing:-.045em;text-transform:uppercase;text-shadow:1px 1px 0 var(--line),2px 2px 0 var(--line),3px 3px 0 var(--line),4px 4px 0 var(--line),5px 5px 0 var(--line),6px 6px 0 var(--line);margin:0 0 10px">Instance overview</h1>
+  <p style="margin:0 0 26px;font-size:15px;color:var(--ink2)">Last 30 days · self-hosted build 4.2.0</p>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px">
+    <sc-for list="{{ adminStats }}" as="s" hint-placeholder-count="4">
+      <div style="border:1px solid var(--line);border-radius:22px;background:var(--surface);padding:18px 20px;display:flex;flex-direction:column;gap:6px">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.08em;color:var(--muted)">{{ s.k }}</span>
+        <span style="font-family:'Bricolage Grotesque',sans-serif;font-size:32px;font-weight:500;letter-spacing:-.03em">{{ s.v }}</span>
+        <span style="font-size:12.5px;color:var(--ink2)">{{ s.note }}</span>
+      </div>
+    </sc-for>
+  </div>
+  <div style="display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:14px">
+    <div style="border:1px solid var(--line);border-radius:24px;background:var(--surface);padding:20px 22px">
+      <div style="font-size:13px;font-weight:600;margin-bottom:18px">Jobs per day</div>
+      <div style="display:flex;align-items:flex-end;gap:6px;height:150px">
+        <sc-for list="{{ chart }}" as="b" hint-placeholder-count="30">
+          <span style="flex:1;height:{{ b.h }};background:{{ b.c }};border-radius:3px 3px 0 0;display:block"></span>
+        </sc-for>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--muted);margin-top:8px"><span>Jul 07</span><span>Jul 21</span><span>Aug 05</span></div>
+    </div>
+    <div style="border:1px solid var(--line);border-radius:24px;background:var(--surface);padding:20px 22px">
+      <div style="font-size:13px;font-weight:600;margin-bottom:16px">Top tools</div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <sc-for list="{{ adminUsage }}" as="u" hint-placeholder-count="6">
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <div style="display:flex;justify-content:space-between;font-size:13px"><span>{{ u.name }}</span><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted)">{{ u.n }}</span></div>
+            <div style="height:5px;border-radius:999px;background:var(--paper2)"><div style="height:100%;width:{{ u.w }};background:var(--accent);border-radius:999px"></div></div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+</main>
+</sc-if>
+
+<sc-if value="{{ isUnlock }}">
+<main data-screen-label="Unlock gate" style="position:relative;z-index:1;max-width:1240px;margin:0 auto;padding:90px 28px;display:grid;place-items:center;animation:tfFade .28s ease both">
+  <div style="width:420px;border:1px solid var(--line);border-radius:26px;background:var(--surface);padding:32px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:16px">
+    <div style="width:34px;height:34px;border:1.5px solid var(--ink);border-radius:9px;display:grid;place-items:center">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="5" y="11" width="14" height="9" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0"></path></svg>
+    </div>
+    <div>
+      <h1 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:28px;letter-spacing:-.035em;text-transform:uppercase;margin:0 0 8px">Access key</h1>
+      <p style="margin:0;font-size:14px;line-height:1.5;color:var(--ink2)">This instance is private. Paste the key from your admin — it is stored in this browser only.</p>
+    </div>
+    <input placeholder="TF-XXXX-XXXX-XXXX" style="height:46px;padding:0 14px;border:1px solid var(--line2);border-radius:11px;background:var(--paper);font-family:'IBM Plex Mono',monospace;font-size:14px;letter-spacing:.06em;outline:none;color:var(--ink)" />
+    <button style="height:46px;border:1px solid var(--ink);background:var(--ink);color:var(--paper);border-radius:999px;font-size:14.5px;font-weight:500;cursor:pointer">Unlock ToolFerry</button>
+    <div style="font-size:12.5px;color:var(--muted);line-height:1.5">Three wrong attempts pauses this browser for 15 minutes. Keys never leave your instance.</div>
+  </div>
+</main>
+</sc-if>
+
+<sc-if value="{{ isNotes }}">
+<main data-screen-label="Design notes" style="position:relative;z-index:1;max-width:1240px;margin:0 auto;padding:44px 28px 110px;animation:tfFade .28s ease both;display:flex;flex-direction:column;gap:64px">
+  <div>
+    <h1 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(2.6rem,5.4vw,64px);letter-spacing:-.045em;text-transform:uppercase;text-shadow:1px 1px 0 var(--line),2px 2px 0 var(--line),3px 3px 0 var(--line),4px 4px 0 var(--line),5px 5px 0 var(--line),6px 6px 0 var(--line);margin:0 0 12px">Design notes</h1>
+    <p style="margin:0;font-size:16px;color:var(--ink2);max-width:66ch;line-height:1.55;text-wrap:pretty">Everything an engineer needs to build this in Next.js: the shell anatomy, motion spec, states, mobile behaviour, and how the catalogue scales past thirty tools without turning into a card wall.</p>
+  </div>
+
+  <section>
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--line);padding-bottom:10px;margin-bottom:24px">01 · Shared tool shell, annotated</div>
+    <div style="display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:40px;align-items:start">
+      <div style="border:1px solid var(--line);border-radius:22px;overflow:hidden;background:var(--surface)">
+        <div style="height:44px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;padding:0 14px;background:var(--paper2)">
+          <span style="width:20px;height:20px;border:1px solid var(--line2);border-radius:6px;display:block"></span>
+          <span style="width:20px;height:20px;border:1px solid var(--line2);border-radius:6px;background:var(--accent-soft);display:block"></span>
+          <span style="width:150px;height:8px;border-radius:4px;background:var(--line2);display:block"></span>
+          <span style="flex:1"></span>
+          <span style="width:78px;height:18px;border-radius:999px;border:1px solid var(--line2);display:block"></span>
+        </div>
+        <div style="padding:16px;display:flex;flex-direction:column;gap:12px">
+          <div style="display:flex;gap:18px;border-bottom:1px solid var(--line);padding-bottom:10px">
+            <span style="width:60px;height:8px;border-radius:4px;background:var(--accent);display:block"></span>
+            <span style="width:60px;height:8px;border-radius:4px;background:var(--line2);display:block"></span>
+            <span style="width:60px;height:8px;border-radius:4px;background:var(--line2);display:block"></span>
+          </div>
+          <div style="display:grid;grid-template-columns:minmax(0,1fr) 132px;gap:12px">
+            <div style="display:flex;flex-direction:column;gap:12px">
+              <div style="height:132px;border:1.5px dashed var(--line2);border-radius:10px;background:var(--paper)"></div>
+              <div style="height:86px;border:1px solid var(--line);border-radius:10px;background:var(--paper)"></div>
+            </div>
+            <div style="height:230px;border:1px solid var(--line);border-radius:10px;background:var(--paper)"></div>
+          </div>
+          <div style="height:44px;border-top:1px solid var(--line);margin:4px -16px -16px;background:var(--paper2);display:flex;align-items:center;padding:0 16px;gap:10px">
+            <span style="width:120px;height:8px;border-radius:4px;background:var(--line2);display:block"></span>
+            <span style="flex:1"></span>
+            <span style="width:64px;height:22px;border-radius:7px;border:1px solid var(--line2);display:block"></span>
+            <span style="width:82px;height:22px;border-radius:7px;background:var(--ink);display:block"></span>
+          </div>
+        </div>
+      </div>
+      <ol style="margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:14px">
+        <sc-for list="{{ shellNotes }}" as="n" hint-placeholder-count="7">
+          <li style="display:flex;gap:12px">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--accent);width:20px;flex:none;padding-top:2px">{{ n.n }}</span>
+            <span style="display:flex;flex-direction:column;gap:3px">
+              <span style="font-size:14px;font-weight:600">{{ n.t }}</span>
+              <span style="font-size:13.5px;color:var(--ink2);line-height:1.5">{{ n.d }}</span>
+            </span>
+          </li>
+        </sc-for>
+      </ol>
+    </div>
+  </section>
+
+  <section>
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--line);padding-bottom:10px;margin-bottom:24px">02 · Motion spec</div>
+    <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px">
+      <sc-for list="{{ motions }}" as="m" hint-placeholder-count="7">
+        <div style="border:1px solid var(--line);border-radius:22px;background:var(--surface);padding:18px 20px;display:flex;flex-direction:column;gap:7px">
+          <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px">
+            <span style="font-size:14.5px;font-weight:600;letter-spacing:-.01em">{{ m.t }}</span>
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--accent);white-space:nowrap">{{ m.spec }}</span>
+          </div>
+          <span style="font-size:13.5px;line-height:1.5;color:var(--ink2);text-wrap:pretty">{{ m.d }}</span>
+          <span style="font-size:12.5px;line-height:1.5;color:var(--muted)">Reduced motion: {{ m.rm }}</span>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <section>
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--line);padding-bottom:10px;margin-bottom:24px">03 · Mobile</div>
+    <div style="display:flex;gap:28px;flex-wrap:wrap">
+      <div style="width:390px;border:1px solid var(--line2);border-radius:26px;overflow:hidden;background:var(--surface);box-shadow:var(--shadow)">
+        <div style="height:26px;background:var(--paper2);display:flex;align-items:center;justify-content:space-between;padding:0 16px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted)"><span>9:41</span><span>ToolFerry</span></div>
+        <div style="padding:24px 20px 20px;display:flex;flex-direction:column;gap:16px;background:repeating-linear-gradient(115deg, var(--paper2) 0 10px, var(--paper) 10px 20px)">
+          <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:46px;font-weight:600;letter-spacing:-.04em;line-height:.95">ToolFerry</div>
+          <div style="font-size:15px;color:var(--ink2);line-height:1.45">Download, convert and clean up files in one calm workspace.</div>
+          <div style="display:flex;flex-direction:column;gap:9px">
+            <button style="height:48px;border:1px solid var(--ink);background:var(--ink);color:var(--paper);border-radius:11px;font-size:15px;font-weight:500">Open tools</button>
+            <button style="height:48px;border:1px solid var(--line2);background:var(--surface);border-radius:11px;font-size:15px;font-weight:500">Try YouTube Downloader</button>
+          </div>
+        </div>
+        <div style="padding:20px;display:flex;flex-direction:column;gap:14px;border-top:1px solid var(--line)">
+          <sc-for list="{{ categoryBlurbs }}" as="c" hint-placeholder-count="4">
+            <div style="display:flex;flex-direction:column;gap:3px;padding-bottom:12px;border-bottom:1px solid var(--line)">
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--muted)">{{ c.count }}</span>
+              <span style="font-size:15px;font-weight:600">{{ c.name }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="width:390px;border:1px solid var(--line2);border-radius:26px;overflow:hidden;background:var(--surface);box-shadow:var(--shadow)">
+        <div style="height:26px;background:var(--paper2);display:flex;align-items:center;justify-content:space-between;padding:0 16px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted)"><span>9:41</span><span>Tools</span></div>
+        <div style="padding:18px 20px;display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;align-items:center;gap:9px;height:44px;padding:0 14px;border:1px solid var(--line2);border-radius:11px;background:var(--paper);color:var(--muted);font-size:14px">Search 38 tools…</div>
+          <div style="display:flex;gap:7px;overflow:hidden">
+            <span style="height:32px;padding:0 13px;border-radius:999px;border:1px solid var(--accent);background:var(--accent-soft);color:var(--accent);font-size:13px;display:grid;place-items:center;flex:none">All</span>
+            <span style="height:32px;padding:0 13px;border-radius:999px;border:1px solid var(--line2);color:var(--ink2);font-size:13px;display:grid;place-items:center;flex:none">Downloaders</span>
+            <span style="height:32px;padding:0 13px;border-radius:999px;border:1px solid var(--line2);color:var(--ink2);font-size:13px;display:grid;place-items:center;flex:none">Media</span>
+            <span style="height:32px;padding:0 13px;border-radius:999px;border:1px solid var(--line2);color:var(--ink2);font-size:13px;display:grid;place-items:center;flex:none">PD</span>
+          </div>
+          <sc-for list="{{ featured }}" as="t" hint-placeholder-count="4">
+            <div style="display:flex;gap:13px;align-items:center;padding:14px;border:1px solid var(--line);border-radius:13px">
+              <span style="width:38px;height:38px;border-radius:10px;background:var(--accent-soft);border:1px solid var(--line);flex:none"></span>
+              <span style="display:flex;flex-direction:column;gap:2px;min-width:0">
+                <span style="font-size:15px;font-weight:600">{{ t.name }}</span>
+                <span style="font-size:13px;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ t.desc }}</span>
+              </span>
+            </div>
+          </sc-for>
+          <div style="font-size:12.5px;color:var(--muted);line-height:1.5">Tool options collapse into accordions; the job bar docks above the home indicator and stays visible while scrolling.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--line);padding-bottom:10px;margin-bottom:24px">04 · Designed states</div>
+    <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px">
+      <sc-for list="{{ states }}" as="s" hint-placeholder-count="6">
+        <div style="border:1px solid {{ s.bd }};border-radius:22px;background:var(--surface);padding:18px 20px;display:flex;gap:14px;align-items:flex-start">
+          <span style="width:8px;height:8px;border-radius:50%;background:{{ s.dot }};display:block;margin-top:7px;flex:none"></span>
+          <span style="display:flex;flex-direction:column;gap:5px">
+            <span style="font-size:14.5px;font-weight:600;letter-spacing:-.01em">{{ s.t }}</span>
+            <span style="font-size:13.5px;line-height:1.5;color:var(--ink2);text-wrap:pretty">{{ s.d }}</span>
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--muted)">{{ s.where }}</span>
+          </span>
+        </div>
+      </sc-for>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:14px">
+      <div style="border:1px solid var(--line);border-radius:22px;background:var(--surface);padding:18px 20px;display:flex;flex-direction:column;gap:12px">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.08em;color:var(--muted)">INLINE ERROR · UNSUPPORTED URL</div>
+        <div style="display:flex;align-items:center;gap:10px;height:46px;padding:0 14px;border:1px solid var(--warn);border-radius:11px;background:var(--paper);font-size:14px;color:var(--ink2)">example.com/blog/post-42</div>
+        <div style="display:flex;gap:10px;align-items:flex-start">
+          <span style="width:7px;height:7px;border-radius:50%;background:var(--warn);margin-top:6px;flex:none;display:block"></span>
+          <span style="font-size:13.5px;line-height:1.5;color:var(--ink2)">That isn't a media page we recognise. If the file is on your machine, <span style="color:var(--accent)">Video Convert</span> will take it directly.</span>
+        </div>
+      </div>
+      <div style="border:1px solid var(--line);border-radius:22px;background:var(--surface);padding:18px 20px;display:flex;flex-direction:column;gap:12px">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.08em;color:var(--muted)">JOB BAR · RATE LIMITED</div>
+        <div style="height:3px;background:var(--line);border-radius:999px"><div style="height:100%;width:34%;background:var(--warn);border-radius:999px"></div></div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <span style="font-size:13.5px;font-weight:500">Paused — 3 of 25 done</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted)">resumes in 04:12</span>
+          <span style="flex:1"></span>
+          <span style="height:32px;padding:0 14px;border:1px solid var(--line2);border-radius:9px;font-size:13px;display:grid;place-items:center">Cancel queue</span>
+        </div>
+        <div style="font-size:12.5px;color:var(--ink2);line-height:1.5">The source is throttling requests. Your queue and settings are kept — nothing needs re-entering.</div>
+      </div>
+      <div style="border:1px solid var(--line);border-radius:22px;background:var(--surface);padding:18px 20px;display:flex;flex-direction:column;gap:12px">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.08em;color:var(--muted)">SHARE LINK LANDING · /s/9xQ2</div>
+        <div style="display:flex;gap:14px;align-items:center">
+          <span style="width:52px;height:52px;border-radius:11px;border:1px solid var(--line);background:repeating-linear-gradient(115deg, var(--paper2) 0 7px, var(--paper) 7px 14px);flex:none;display:block"></span>
+          <span style="display:flex;flex-direction:column;gap:3px;min-width:0">
+            <span style="font-size:15px;font-weight:600;letter-spacing:-.01em">building-a-quiet-workspace.mp4</span>
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--muted)">268 MB · MP4 1080p · expires in 23:41</span>
+          </span>
+        </div>
+        <span style="height:42px;border:1px solid var(--ink);background:var(--ink);color:var(--paper);border-radius:999px;font-size:14px;font-weight:500;display:grid;place-items:center">Save file</span>
+      </div>
+      <div style="border:1px solid var(--line);border-radius:22px;background:var(--surface);padding:18px 20px;display:flex;flex-direction:column;gap:12px">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.08em;color:var(--muted)">MODAL · PROTECT PDF</div>
+        <div style="font-size:15px;font-weight:600;letter-spacing:-.01em">Set a document password</div>
+        <div style="display:flex;gap:9px">
+          <span style="flex:1;height:40px;border:1px solid var(--line2);border-radius:10px;background:var(--paper);display:flex;align-items:center;padding:0 12px;font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--muted)">••••••••••</span>
+          <span style="flex:1;height:40px;border:1px solid var(--line2);border-radius:10px;background:var(--paper);display:flex;align-items:center;padding:0 12px;font-size:13px;color:var(--muted)">Confirm</span>
+        </div>
+        <div style="font-size:12.5px;color:var(--ink2);line-height:1.5">Held in memory for this job only — we cannot recover it, and a lost password means a lost file.</div>
+      </div>
+      <div style="border:1px solid var(--line);border-radius:22px;background:var(--surface);padding:26px 20px;display:flex;flex-direction:column;gap:10px;align-items:center;text-align:center">
+        <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:38px;font-weight:500;letter-spacing:-.03em;line-height:1">404</div>
+        <div style="font-size:14px;color:var(--ink2);line-height:1.5;max-width:38ch">No tool at <span style="font-family:'IBM Plex Mono',monospace;font-size:13px">/tools/mp3-magic</span>. Here is the catalogue with that term already searched.</div>
+        <div style="height:38px;padding:0 16px;border:1px solid var(--line2);border-radius:999px;font-size:13.5px;display:grid;place-items:center;color:var(--ink2)">Search “mp3 magic” in tools</div>
+      </div>
+      <div style="border:1px solid var(--line);border-radius:22px;background:var(--surface);padding:18px 20px;display:flex;flex-direction:column;gap:12px">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.08em;color:var(--muted)">FILE LIST · OVERSIZED UPLOAD</div>
+        <div style="display:flex;align-items:center;gap:12px;padding:11px 13px;border:1px solid var(--warn);border-radius:10px">
+          <span style="width:30px;height:30px;border-radius:8px;border:1px solid var(--line);background:var(--paper2);flex:none;display:block"></span>
+          <span style="display:flex;flex-direction:column;gap:2px;flex:1;min-width:0">
+            <span style="font-size:13.5px;font-weight:500">masters-4k-uncut.mov</span>
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--warn)">4.8 GB · OVER THE 2 GB LIMIT</span>
+          </span>
+          <span style="height:30px;padding:0 12px;border:1px solid var(--line2);border-radius:8px;font-size:12.5px;display:grid;place-items:center">Compress first</span>
+        </div>
+        <div style="font-size:12.5px;color:var(--ink2);line-height:1.5">The rest of the batch stays queued — one bad file never invalidates the drop.</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--line);padding-bottom:10px;margin-bottom:24px">05 · Rationale — scaling past 30 tools</div>
+    <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:32px">
+      <sc-for list="{{ rationale }}" as="r" hint-placeholder-count="6">
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="font-size:16px;font-weight:600;letter-spacing:-.015em">{{ r.t }}</div>
+          <div style="font-size:14px;line-height:1.6;color:var(--ink2);text-wrap:pretty">{{ r.d }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <section>
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--line);padding-bottom:10px;margin-bottom:24px">06 · Type, colour tokens &amp; components</div>
+    <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:32px">
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:34px;font-weight:600;letter-spacing:-.035em;line-height:1">Bricolage Grotesque</div>
+        <div style="font-size:13.5px;color:var(--ink2);line-height:1.55">Display: brand, page titles, hero. 500–600 weight, tight tracking (−.03em), never below 22px.</div>
+        <div style="font-size:19px;font-weight:500">Instrument Sans — body</div>
+        <div style="font-size:13.5px;color:var(--ink2);line-height:1.55">UI and reading text, 13–20px. IBM Plex Mono carries sizes, codecs, timecodes and status tokens.</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <sc-for list="{{ tokens }}" as="tk" hint-placeholder-count="8">
+          <div style="display:flex;align-items:center;gap:11px">
+            <span style="width:22px;height:22px;border-radius:6px;border:1px solid var(--line);background:{{ tk.v }};display:block;flex:none"></span>
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:12px">{{ tk.k }}</span>
+            <span style="font-size:12.5px;color:var(--muted)">{{ tk.d }}</span>
+          </div>
+        </sc-for>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="font-size:13.5px;color:var(--ink2);line-height:1.55;margin-bottom:4px">Every colour is a CSS custom property on <span style="font-family:'IBM Plex Mono',monospace;font-size:12.5px">:root</span>; the dark theme only reassigns those eight values. Retheming is one block — no component touches a literal colour.</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <sc-for list="{{ components }}" as="c" hint-placeholder-count="16">
+            <span style="height:28px;padding:0 10px;border:1px solid var(--line);border-radius:7px;font-size:12.5px;color:var(--ink2);display:grid;place-items:center">{{ c }}</span>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+</sc-if>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:960}}">
+const CATS = ["All", "Downloaders", "Media", "PDF", "Documents", "Utilities"];
+
+// slug, name, cat, desc, input, emptyTitle, empty, accepts, opts, binary, deps
+const RAW = [
+  ["youtube","YouTube Downloader","Downloaders","Video, audio and subtitles from any public YouTube link","url","Paste a link to begin","A single video, a playlist, or a channel tab.","URL",[],true,"yt-dlp + ffmpeg"],
+  ["social","Universal Social Downloader","Downloaders","One field, auto-detects nine platforms","url","One field, nine platforms","Drop in a link and we work out the platform.","URL",[],true,"yt-dlp"],
+  ["tiktok","TikTok Downloader","Downloaders","Videos and slideshows, with or without watermark","url","Paste a TikTok link","Video posts and photo slideshows. Watermark removal is best-effort.","URL",[["Output","MP4 · no watermark","MP4 · original","MP3 audio"],["Cover image","Save","Skip"]],true,"yt-dlp"],
+  ["instagram","Instagram Downloader","Downloaders","Reels, posts and carousels","url","Paste a Reel or post link","Public posts only. Carousels download as a numbered set.","URL",[["Output","MP4","JPG set","MP3 audio"],["Caption","Save as .txt","Skip"]],true,"yt-dlp"],
+  ["facebook","Facebook Downloader","Downloaders","Public videos and reels","url","Paste a Facebook video link","Public videos only — private and group posts need a cookies file.","URL",[["Quality","Best","720p","360p"]],true,"yt-dlp"],
+  ["x","X / Twitter Downloader","Downloaders","Video and GIF posts","url","Paste a post link","Works with video and animated GIF posts.","URL",[["Output","MP4","GIF","Audio"]],true,"yt-dlp"],
+  ["reddit","Reddit Downloader","Downloaders","Merges Reddit's split video and audio streams","url","Paste a Reddit post link","Reddit hosts video and audio separately — we merge them for you.","URL",[["Audio","Merge","Video only"]],true,"yt-dlp + ffmpeg"],
+  ["vimeo","Vimeo Downloader","Downloaders","Public and unlisted Vimeo videos","url","Paste a Vimeo link","Password-protected videos need the password below.","URL",[["Quality","Best","1080p","720p"],["Password","Not required","Enter…"]],true,"yt-dlp"],
+  ["twitch","Twitch Clips & VODs","Downloaders","Clips, highlights and full VODs","url","Paste a clip or VOD link","Long VODs download in segments and are stitched at the end.","URL",[["Source","Clip","VOD","Highlight"],["Chat log","Include .json","Skip"]],true,"yt-dlp"],
+  ["soundcloud","SoundCloud Downloader","Downloaders","Tracks, sets and playlists with tags","url","Paste a track or set link","Metadata and cover art are written into the file.","URL",[["Format","MP3 320","M4A","Opus"],["Artwork","Embed","Save separately"]],true,"yt-dlp"],
+
+  ["video-convert","Video Convert","Media","MOV, MKV, WebM and AVI into clean MP4","upload","Drop a video to convert","MOV, MKV, WebM, AVI, MP4, FLV. Batch up to 10 files.","MOV · MKV · WEBM · AVI",[],true,"ffmpeg"],
+  ["audio-convert","Audio Convert","Media","WAV, FLAC and M4A to MP3, Opus or AAC","upload","Drop audio files","Lossless in, compressed out — tags are carried over.","WAV · FLAC · M4A · MP3",[["Target","MP3 320","Opus 128","AAC 256","FLAC"],["Normalize","Off","EBU R128"]],true,"ffmpeg"],
+  ["compress-video","Compress Video","Media","Hit a target size without wrecking quality","upload","Drop a video to compress","We two-pass encode to land within 2% of your target.","MP4 · MOV · MKV",[["Mode","Target size","Quality slider"],["Target","25 MB","100 MB","500 MB"]],true,"ffmpeg"],
+  ["extract-audio","Extract Audio","Media","Pull the soundtrack out of any video","upload","Drop a video","The audio stream is copied when possible — no re-encode, no loss.","MP4 · MKV · MOV · WEBM",[["Format","MP3","M4A","WAV"],["Channels","Stereo","Mono"]],true,"ffmpeg"],
+  ["trim","Trim / Clip","Media","Cut a range with frame-accurate handles","upload","Drop a video to trim","Scrub the timeline, set in and out, export just that range.","MP4 · MOV · MKV",[["Cut mode","Fast (keyframe)","Precise (re-encode)"]],true,"ffmpeg"],
+  ["gif","GIF Maker","Media","Turn a clip range into a tuned GIF","upload","Drop a video to make a GIF","Pick a range under 15 seconds for a sensible file size.","MP4 · MOV · WEBM",[["Frame rate","12 fps","15 fps","24 fps"],["Width","320","480","640"],["Palette","Optimised","Grayscale"]],true,"ffmpeg"],
+  ["mute","Mute / Strip Audio","Media","Remove audio tracks, keep the video untouched","upload","Drop a video to mute","Stream copy — the video is never re-encoded.","MP4 · MOV · MKV",[["Tracks","Strip all","Keep track 1"]],true,"ffmpeg"],
+  ["resfps","Resolution / FPS","Media","Rescale and retime video","upload","Drop a video to rescale","Downscaling looks better than upscaling — we will warn you either way.","MP4 · MOV · MKV",[["Resolution","2160p","1080p","720p","480p"],["Frame rate","Keep","60","30","24"]],true,"ffmpeg"],
+  ["image-convert","Image Convert","Media","PNG, JPG, WebP and AVIF, in any direction","upload","Drop images to convert","Up to 100 images at once. Transparency is preserved where the target allows.","PNG · JPG · WEBP · AVIF",[],false,"sharp"],
+  ["image-resize","Image Resize / Compress","Media","Resize, crop and squeeze image weight","upload","Drop images to resize","Set a long-edge cap and a quality target; we do the rest.","PNG · JPG · WEBP",[["Long edge","4000","2000","1200","800"],["Quality","Lossless","High","Balanced","Small"]],false,"sharp"],
+
+  ["pdf-merge","Merge PDF","PDF","Combine files into one, in your order","upload","Drop PDFs to merge","Two or more files. Drag to set the order before merging.","PDF",[],false,"pdf-lib"],
+  ["pdf-split","Split PDF","PDF","Extract page ranges into new files","upload","Drop a PDF to split","Use ranges like 1-3, 7, 12-end.","PDF",[["Mode","Ranges","Every page","Every N pages"],["Output","Separate files","One ZIP"]],false,"pdf-lib"],
+  ["pdf-compress","Compress PDF","PDF","Shrink scans and image-heavy documents","upload","Drop a PDF to compress","Text stays sharp; embedded images are re-sampled.","PDF",[["Preset","Screen 96dpi","eBook 150dpi","Print 300dpi"]],true,"ghostscript"],
+  ["pdf-images","PDF ↔ Images","PDF","Pages out to PNG, or images in to PDF","upload","Drop a PDF or a set of images","Direction is detected from what you drop.","PDF · PNG · JPG",[["Direction","PDF → PNG","Images → PDF"],["DPI","72","150","300"]],true,"pdftoppm"],
+  ["pdf-rotate","Rotate / Reorder Pages","PDF","Fix orientation and page order","upload","Drop a PDF to rearrange","Thumbnails appear here — drag to reorder, click to rotate.","PDF",[["Rotate","90° CW","90° CCW","180°"],["Apply to","All pages","Selected"]],false,"pdf-lib"],
+  ["pdf-watermark","Watermark PDF","PDF","Stamp text or an image across pages","upload","Drop a PDF to watermark","Text or a transparent PNG, placed on every page or a range.","PDF",[["Type","Text","Image"],["Position","Diagonal","Centre","Footer"],["Opacity","10%","25%","50%"]],false,"pdf-lib"],
+  ["pdf-protect","Protect / Unlock PDF","PDF","Add or remove a password","upload","Drop a PDF","We never store passwords — they live in memory for the length of the job.","PDF",[["Action","Protect","Unlock"],["Permissions","No printing","No copying","Full"]],true,"qpdf"],
+
+  ["docx-pdf","DOCX → PDF","Documents","Word documents with layout intact","upload","Drop a .docx file","Fonts are embedded; track changes are flattened.","DOCX · DOC",[["Page size","A4","Letter"],["Comments","Hide","Show"]],true,"libreoffice"],
+  ["pdf-docx","PDF → DOCX","Documents","Best-effort conversion back to editable Word","upload","Drop a PDF to convert","Honest note: complex layouts, columns and scanned pages will need cleanup.","PDF",[["Layout","Keep visual","Flow text"],["Images","Embed","Drop"]],true,"libreoffice"],
+  ["markdown","Markdown ↔ PDF/DOCX","Documents","Render Markdown into paged documents","upload","Drop or paste Markdown","GFM tables, code blocks and footnotes are supported.","MD · MARKDOWN",[["Target","PDF","DOCX","HTML"],["Theme","Plain","Technical","Manuscript"]],true,"pandoc"],
+  ["txt-pdf","TXT / RTF → PDF","Documents","Plain text into a typeset page","upload","Drop a .txt or .rtf file","Line breaks are preserved; long lines wrap to the page.","TXT · RTF",[["Font","Serif","Sans","Mono"],["Size","10pt","12pt","14pt"]],false,"pandoc"],
+  ["images-pdf","Images → PDF","Documents","Bundle images into a paged PDF","upload","Drop images","Order the pages, choose a fit, export one PDF.","PNG · JPG · HEIC",[["Fit","Fill page","Fit with margin"],["Orientation","Auto","Portrait","Landscape"]],false,"pdf-lib"],
+
+  ["qr","QR Generate / Decode","Utilities","Make QR codes or read one from an image","text","","","",[],false,""],
+  ["hash","Hash / Checksum","Utilities","MD5, SHA-1, SHA-256 for text or files","upload","Drop a file or paste text","Compare against an expected checksum to verify a download.","ANY FILE",[["Algorithm","MD5","SHA-1","SHA-256","SHA-512"],["Case","lower","UPPER"]],false,""],
+  ["base64","Base64 Encode / Decode","Utilities","Text and files, both directions","text","","Paste text or drop a file. Data-URI wrapping optional.","TEXT · ANY FILE",[["Direction","Encode","Decode"],["Wrap","None","Data URI","76 cols"]],false,""],
+  ["jsonyaml","JSON / YAML Formatter","Utilities","Format, minify and convert between them","text","","Paste a document — errors are highlighted with line numbers.","JSON · YAML",[["Action","Format","Minify","JSON → YAML","YAML → JSON"],["Indent","2","4","Tab"]],false,""],
+  ["regex","Regex Tester","Utilities","Live matches, groups and replace preview","text","","Write a pattern and test text; matches highlight as you type.","TEXT",[["Flags","g","i","m","s"],["Mode","Match","Replace","Split"]],false,""],
+  ["metadata","Metadata Strip","Utilities","Remove EXIF, GPS and media tags","upload","Drop files to clean","We show you what will be removed before anything is written.","JPG · PNG · MP4 · PDF",[["Remove","All metadata","GPS only","Keep copyright"]],false,"exiftool"]
+];
+
+const TOOLS = RAW.map(function (r) {
+  return { slug: r[0], name: r[1], cat: r[2], desc: r[3], input: r[4], emptyTitle: r[5], empty: r[6], accepts: r[7], opts: r[8], binary: r[9], deps: r[10] || "runtime" };
+});
+
+const HIFI = { youtube: 1, social: 1, "video-convert": 1, "pdf-merge": 1, "image-convert": 1, qr: 1 };
+
+class Component extends DCLogic {
+  state = {
+    route: "home", slug: "youtube", theme: "light",
+    q: "", cat: "All",
+    url: "", quality: "1080p", audio: "MP3", advanced: false,
+    files: [], drag: false,
+    opt: {}, qrTab: "Generate", qrText: "https://toolferry.app/s/9xQ2", qrEcc: "M", qrSize: 1024,
+    job: "idle", pct: 0, prep: 0, preparing: false,
+    recent: ["youtube", "pdf-merge", "image-convert", "video-convert"]
+  };
+
+  componentWillUnmount() { clearInterval(this._t); clearInterval(this._p); }
+
+  tool() { return TOOLS.find(t => t.slug === this.state.slug) || TOOLS[0]; }
+
+  go = (route, slug) => {
+    clearInterval(this._t); clearInterval(this._p);
+    const s = { route, job: "idle", pct: 0 };
+    if (slug) {
+      s.slug = slug; s.url = ""; s.files = []; s.opt = {}; s.advanced = false;
+      const t = TOOLS.find(x => x.slug === slug);
+      const needsPrep = t && t.binary && slug !== "youtube";
+      s.preparing = needsPrep; s.prep = 0;
+      if (needsPrep) {
+        this._p = setInterval(() => {
+          this.setState(st => {
+            const n = Math.min(100, st.prep + 9);
+            if (n >= 100) { clearInterval(this._p); return { prep: 100, preparing: false }; }
+            return { prep: n };
+          });
+        }, 110);
+      }
+      const rec = [slug].concat(this.state.recent.filter(r => r !== slug)).slice(0, 4);
+      s.recent = rec;
+    }
+    window.scrollTo(0, 0);
+    this.setState(s);
+  };
+
+  startJob = () => {
+    if (this.state.job === "running") return;
+    this.setState({ job: "running", pct: 0 });
+    this._t = setInterval(() => {
+      this.setState(st => {
+        const n = Math.min(100, st.pct + (st.pct > 82 ? 1.4 : 3.1));
+        if (n >= 100) { clearInterval(this._t); return { pct: 100, job: "done" }; }
+        return { pct: n };
+      });
+    }, 95);
+  };
+  cancelJob = () => { clearInterval(this._t); this.setState({ job: "idle", pct: 0 }); };
+
+  pill(on) {
+    return on
+      ? { bd: "var(--accent)", bg: "var(--accent-soft)", fg: "var(--accent)", dot: "var(--accent)" }
+      : { bd: "var(--line2)", bg: "var(--surface)", fg: "var(--ink2)", dot: "var(--line2)" };
+  }
+
+  renderVals() {
+    const st = this.state, t = this.tool(), self = this;
+    const route = st.route, isTool = route === "tool";
+    const hifi = !!HIFI[t.slug];
+    const isYT = isTool && t.slug === "youtube";
+    const isSocial = isTool && t.slug === "social";
+    const isQR = isTool && t.slug === "qr";
+    const isUpload = isTool && !isQR && t.input === "upload";
+    const isGeneric = isTool && !isYT && !isSocial && !isQR && !isUpload;
+
+    const flags = x => ({ isDL: x.cat === "Downloaders", isMD: x.cat === "Media", isPD: x.cat === "PDF", isDC: x.cat === "Documents", isUT: x.cat === "Utilities" });
+    const deco = (x, i) => Object.assign({}, x, flags(x), { delay: (i % 12) * 26 + "ms", open: () => self.go("tool", x.slug) });
+
+    const q = st.q.trim().toLowerCase();
+    const filtered = TOOLS.filter(x =>
+      (st.cat === "All" || x.cat === st.cat) &&
+      (!q || (x.name + " " + x.desc + " " + x.cat + " " + x.accepts).toLowerCase().indexOf(q) >= 0)
+    ).map(deco);
+
+    const navItems = [["home", "Home"], ["hub", "Tools"], ["history", "Job history"], ["admin", "Admin"], ["notes", "Design notes"]].map(n => ({
+      label: n[1], go: () => self.go(n[0]),
+      bg: route === n[0] || (n[0] === "hub" && isTool) ? "var(--accent-soft)" : "transparent",
+      bd: route === n[0] || (n[0] === "hub" && isTool) ? "var(--accent)" : "var(--line2)",
+      fg: route === n[0] || (n[0] === "hub" && isTool) ? "var(--accent)" : "var(--ink2)"
+    }));
+
+    const cats = CATS.map(c => {
+      const on = st.cat === c, p = self.pill(on);
+      return { name: c, n: c === "All" ? TOOLS.length : TOOLS.filter(x => x.cat === c).length, bd: p.bd, bg: p.bg, fg: on ? "var(--accent)" : "var(--ink2)", pick: () => self.setState({ cat: c }) };
+    });
+
+    // job / cta
+    const job = st.job;
+    const ctaLabel = job === "done" ? "Download result" : job === "running" ? "Running…" : (isYT || isSocial ? "Start download" : "Start");
+    const primaryAction = job === "done" ? () => self.setState({ job: "idle", pct: 0 }) : self.startJob;
+
+    // steps
+    const stepNames = isYT || isSocial ? ["Paste", "Configure", "Process", "Save"] : isQR ? ["Compose", "Configure", "Export"] : ["Upload", "Configure", "Process", "Save"];
+    const hasInput = isYT || isSocial ? !!st.url : isQR ? true : st.files.length > 0;
+    let cur = 0;
+    if (job === "done") cur = stepNames.length - 1; else if (job === "running") cur = 2; else if (hasInput) cur = 1;
+    const steps = stepNames.map((label, i) => ({
+      n: i + 1, label,
+      bar: i === cur ? "var(--accent)" : "transparent",
+      dot: i <= cur ? "var(--accent)" : "var(--line2)",
+      dotBg: i < cur ? "var(--accent)" : "transparent",
+      dotFg: i < cur ? "var(--accent-ink)" : i === cur ? "var(--accent)" : "var(--muted)",
+      fg: i <= cur ? "var(--ink)" : "var(--muted)"
+    }));
+
+    // quality rows (YouTube)
+    const Q = [["Best available", "AV1 1080p60 + Opus, remuxed to MP4", "412 MB"], ["1080p", "H.264 + AAC — plays everywhere", "268 MB"], ["720p", "Smaller, still sharp on phones", "141 MB"], ["Audio only", "Skips video entirely", "18 MB"]];
+    const qualities = Q.map(r => {
+      const on = st.quality === r[0], p = self.pill(on);
+      return { name: r[0], note: r[1], size: r[2], on, bd: p.bd, bg: on ? "var(--accent-soft)" : "var(--surface)", dot: p.dot, pick: () => self.setState({ quality: r[0] }) };
+    });
+    const audioFormats = ["None", "MP3", "M4A", "Opus"].map(a => {
+      const on = st.audio === a, p = self.pill(on);
+      return { name: a, bd: p.bd, bg: p.bg, fg: on ? "var(--accent)" : "var(--ink2)", pick: () => self.setState({ audio: a }) };
+    });
+    const SF = [["Video · 1080p", "MP4, no watermark where possible", "24 MB"], ["Video · original", "Exactly as the platform serves it", "31 MB"], ["Audio only", "MP3 320 kbps", "3.4 MB"], ["Cover / thumbnail", "Largest available still", "480 KB"]];
+    const socialFormats = SF.map(r => {
+      const on = st.quality === r[0], p = self.pill(on);
+      return { name: r[0], note: r[1], size: r[2], on, bd: p.bd, bg: on ? "var(--accent-soft)" : "var(--surface)", dot: p.dot, pick: () => self.setState({ quality: r[0] }) };
+    });
+    const platforms = ["YouTube", "TikTok", "Instagram", "Facebook", "X", "Reddit", "Vimeo", "Twitch", "SoundCloud"].map(p => {
+      const on = st.url && p === "TikTok";
+      return { name: p, bd: on ? "var(--accent)" : "var(--line)", bg: on ? "var(--accent-soft)" : "transparent", fg: on ? "var(--accent)" : "var(--muted)" };
+    });
+
+    // option rows from tool config
+    const OPT_HINTS = { Quality: "Affects size and encode time", Target: "Container and codec", Format: "Container and codec" };
+    const optRows = (isYT || isSocial ? [] : t.opts).map(o => {
+      const label = o[0], choices = o.slice(1);
+      const sel = st.opt[label] || choices[0];
+      return {
+        label, hint: OPT_HINTS[label] || "",
+        choices: choices.map(c => {
+          const on = sel === c, p = self.pill(on);
+          return { name: c, bd: p.bd, bg: p.bg, fg: on ? "var(--accent)" : "var(--ink2)", pick: () => self.setState(s => ({ opt: Object.assign({}, s.opt, { [label]: c }) })) };
+        })
+      };
+    });
+
+    // hi-fi upload tools get purpose-built option rows
+    let extraRows = [];
+    if (t.slug === "video-convert") extraRows = [
+      { label: "Target format", hint: "MOV, MKV, WebM and AVI all land as MP4", choices: ["MP4 (H.264)", "MP4 (H.265)", "WebM (VP9)", "MKV (copy)"] },
+      { label: "Quality preset", hint: "Two-pass where it helps", choices: ["Visually lossless", "High", "Balanced", "Small file"] },
+      { label: "Audio", hint: "", choices: ["Copy", "AAC 192", "Remove"] }
+    ];
+    if (t.slug === "image-convert") extraRows = [
+      { label: "Target format", hint: "Transparency preserved for PNG, WebP, AVIF", choices: ["WebP", "AVIF", "PNG", "JPG"] },
+      { label: "Quality", hint: "AVIF at 60 ≈ JPG at 85", choices: ["Lossless", "90", "75", "60"] },
+      { label: "Metadata", hint: "", choices: ["Strip all", "Keep EXIF", "Keep copyright"] }
+    ];
+    if (t.slug === "pdf-merge") extraRows = [
+      { label: "Bookmarks", hint: "One top-level entry per source file", choices: ["From filenames", "From first heading", "None"] },
+      { label: "Page size", hint: "", choices: ["Keep original", "Normalise to A4", "Normalise to Letter"] }
+    ];
+    const allRows = extraRows.map(r => ({
+      label: r.label, hint: r.hint,
+      choices: r.choices.map(c => {
+        const on = (st.opt[r.label] || r.choices[0]) === c, p = self.pill(on);
+        return { name: c, bd: p.bd, bg: p.bg, fg: on ? "var(--accent)" : "var(--ink2)", pick: () => self.setState(s => ({ opt: Object.assign({}, s.opt, { [r.label]: c }) })) };
+      })
+    })).concat(optRows);
+
+    // files
+    const SAMPLES = {
+      "video-convert": [["seaside-interview-raw.mov", "1.24 GB · 1920×1080 · 12:41"], ["b-roll-harbour.mkv", "684 MB · 3840×2160 · 02:18"], ["screen-capture.webm", "96 MB · 1440×900 · 06:02"]],
+      "pdf-merge": [["01 — cover-letter.pdf", "2 pages · 184 KB"], ["02 — proposal-v4.pdf", "18 pages · 3.1 MB"], ["03 — appendix-rates.pdf", "4 pages · 412 KB"]],
+      "image-convert": [["hero-plate-01.png", "4032×3024 · 12.4 MB"], ["hero-plate-02.png", "4032×3024 · 11.8 MB"], ["detail-shot.jpg", "3000×2000 · 4.2 MB"]]
+    };
+    const pool = SAMPLES[t.slug] || [["input-01" + (t.cat === "PDF" ? ".pdf" : ".mp4"), "1 file · 128 MB"], ["input-02" + (t.cat === "PDF" ? ".pdf" : ".mp4"), "1 file · 64 MB"], ["input-03" + (t.cat === "PDF" ? ".pdf" : ".mp4"), "1 file · 22 MB"]];
+    const files = st.files.map((f, i) => ({
+      name: f[0], meta: f[1],
+      up: () => self.setState(s => { const a = s.files.slice(); if (i > 0) { const x = a[i - 1]; a[i - 1] = a[i]; a[i] = x; } return { files: a }; }),
+      down: () => self.setState(s => { const a = s.files.slice(); if (i < a.length - 1) { const x = a[i + 1]; a[i + 1] = a[i]; a[i] = x; } return { files: a }; }),
+      remove: () => self.setState(s => ({ files: s.files.filter((_, j) => j !== i) }))
+    }));
+    const addFile = () => self.setState(s => (s.files.length >= pool.length ? {} : { files: s.files.concat([pool[s.files.length]]), drag: false }));
+
+    // aside
+    const asideMap = {
+      "video-convert": { title: "Preview", ratio: "16 / 9", slot: "first frame", note: "Estimates assume the current preset. Actual size varies with motion; the job report shows the real numbers.", stats: [{ k: "Source", v: "MOV · ProRes" }, { k: "Target", v: "MP4 · H.264" }, { k: "Est. output", v: "312 MB (−74%)" }, { k: "Est. time", v: "4m 10s" }] },
+      "image-convert": { title: "Preview", ratio: "4 / 3", slot: "image 1 of 3", note: "AVIF saves the most bytes but encodes ~4× slower than WebP. Safari 16+ supports both.", stats: [{ k: "Images", v: "3" }, { k: "Total in", v: "28.4 MB" }, { k: "Est. out", v: "5.9 MB (−79%)" }] },
+      "pdf-merge": { title: "First page", ratio: "3 / 4", slot: "page 1 preview", note: "Merged files keep their own page sizes unless you normalise. Form fields are flattened.", stats: [{ k: "Files", v: "3" }, { k: "Pages", v: "24" }, { k: "Output size", v: "≈3.7 MB" }] },
+      qr: { title: "Preview", ratio: "1 / 1", slot: "QR preview", note: "Level M survives about 15% damage — right for print. Use Q or H for stickers and labels.", stats: [{ k: "Modules", v: "37 × 37" }, { k: "Version", v: "5" }, { k: "Export", v: "PNG · SVG · PDF" }] },
+      youtube: { title: "Output", ratio: "16 / 9", slot: "result preview", note: "Files land in your instance's downloads volume and are removed after 1 hour unless pinned.", stats: [{ k: "Container", v: "MP4" }, { k: "Video", v: "H.264 1080p" }, { k: "Audio", v: "AAC 192 + MP3" }, { k: "Est. size", v: "268 MB" }] }
+    };
+    const aside = asideMap[t.slug];
+
+    const catCounts = c => TOOLS.filter(x => x.cat === c).length;
+
+    return {
+      // routing
+      isHome: route === "home", isHub: route === "hub", isTool, navItems,
+      goHome: () => self.go("home"), goHub: () => self.go("hub"), goYT: () => self.go("tool", "youtube"),
+      goUnlock: () => self.go("unlock"),
+      toggleTheme: () => { const n = st.theme === "light" ? "dark" : "light"; document.documentElement.dataset.theme = n; self.setState({ theme: n }); },
+
+      // home
+      categoryBlurbs: [
+        { name: "Downloaders", count: String(catCounts("Downloaders")).padStart(2, "0") + " tools", blurb: "Save video and audio from ten platforms, single links or batches of 25." },
+        { name: "Media", count: String(catCounts("Media")).padStart(2, "0") + " tools", blurb: "Convert, compress, trim and rescale video, audio and images." },
+        { name: "PDF & docs", count: String(catCounts("PDF") + catCounts("Documents")).padStart(2, "0") + " tools", blurb: "Merge, split, protect and convert documents both directions." },
+        { name: "Utilities", count: String(catCounts("Utilities")).padStart(2, "0") + " tools", blurb: "QR, hashes, Base64, JSON and metadata — the small daily stuff." }
+      ],
+      featured: ["youtube", "video-convert", "pdf-merge", "image-convert"].map(s => deco(TOOLS.find(x => x.slug === s), 0)),
+      footerCols: [
+        { title: "Product", links: ["All tools", "What's new", "Roadmap", "Self-host"] },
+        { title: "Popular", links: ["YouTube Downloader", "Video Convert", "Merge PDF", "Image Convert"] },
+        { title: "Legal", links: ["Terms", "Privacy", "Acceptable use", "DMCA"] },
+        { title: "Instance", links: ["Status", "Admin", "Job history", "API keys"] }
+      ],
+
+      // hub
+      q: st.q, hasQuery: !!st.q, onSearch: e => self.setState({ q: e.target.value }), clearSearch: () => self.setState({ q: "", cat: "All" }),
+      cats, filtered, hasResults: filtered.length > 0, noResults: filtered.length === 0,
+      toolCount: TOOLS.length, showRecent: !st.q && st.cat === "All",
+      recent: st.recent.map((s, i) => Object.assign(deco(TOOLS.find(x => x.slug === s), i), { when: ["2m ago", "1h ago", "yesterday", "3d ago"][i] })),
+
+      // tool shell
+      tool: Object.assign({}, t, flags(t)),
+      preparing: st.preparing, ready: !st.preparing, prepPct: Math.round(st.prep), depsReady: !st.preparing && !!t.binary,
+      steps, isYT, isSocial, isQR, isUpload, isGeneric,
+      gridCols: aside ? "minmax(0,1fr) 320px" : "minmax(0,1fr)", hasAside: !!aside,
+      asideTitle: aside ? aside.title : "", asideRatio: aside ? aside.ratio : "16 / 9", asideSlot: aside ? aside.slot : "", asideStats: aside ? aside.stats : [], asideNote: aside ? aside.note : "",
+      url: st.url, hasUrl: !!st.url, noUrl: !st.url, onUrl: e => self.setState({ url: e.target.value }),
+      urlBd: st.url ? "var(--accent)" : "var(--line2)",
+      pasteSample: () => self.setState({ url: st.url ? "" : (isSocial ? "tiktok.com/@northline/video/7391028" : "youtube.com/watch?v=q7Xk2Lp9Vd0") }),
+      qualities, audioFormats, socialFormats, platforms,
+      advanced: st.advanced, advancedLabel: st.advanced ? "Hide" : "3 options set",
+      toggleAdvanced: () => self.setState({ advanced: !st.advanced }),
+      queue: [
+        { title: "Building a quiet workspace — full walkthrough", meta: "12:41 · 268 MB", status: "QUEUED", bd: "var(--line)", fg: "var(--muted)" },
+        { title: "Field notes: recording rooms, not gear", meta: "08:02 · 174 MB", status: "QUEUED", bd: "var(--line)", fg: "var(--muted)" },
+        { title: "Why we stopped using presets", meta: "04:55 · 96 MB", status: "SKIPPED · MEMBERS ONLY", bd: "var(--warn)", fg: "var(--warn)" }
+      ],
+      optRows: allRows, hasOptions: allRows.length > 0 && !st.preparing,
+      hasTimeline: t.slug === "trim" || t.slug === "gif",
+      files, hasFiles: st.files.length > 0, addFile,
+      fileCountLabel: st.files.length + (st.files.length === 1 ? " file" : " files") + " · " + (t.slug === "pdf-merge" ? "24 pages total" : "ready to process"),
+      reorderHint: t.slug === "pdf-merge" ? "Drag handles to set merge order" : "Processed top to bottom",
+      dropBd: st.drag ? "var(--accent)" : "var(--line2)", dropBg: st.drag ? "var(--accent-soft)" : "var(--surface)", dropPad: st.files.length ? "26px 32px" : "64px 32px",
+      onDragOver: e => { e.preventDefault(); if (!st.drag) self.setState({ drag: true }); },
+      onDragLeave: () => self.setState({ drag: false }),
+      onDrop: e => { e.preventDefault(); addFile(); },
+      qrTabs: ["Generate", "Decode"].map(n => ({ name: n, bg: st.qrTab === n ? "var(--surface)" : "transparent", fg: st.qrTab === n ? "var(--ink)" : "var(--muted)", sh: st.qrTab === n ? "var(--shadow)" : "none", pick: () => self.setState({ qrTab: n }) })),
+      qrText: st.qrText, onQrText: e => self.setState({ qrText: e.target.value }),
+      qrEcc: ["L", "M", "Q", "H"].map(n => { const on = st.qrEcc === n, p = self.pill(on); return { name: n, bd: p.bd, bg: p.bg, fg: on ? "var(--accent)" : "var(--ink2)", pick: () => self.setState({ qrEcc: n }) }; }),
+      qrSize: st.qrSize, onQrSize: e => self.setState({ qrSize: +e.target.value }),
+
+      // supporting screens
+      isHistory: route === "history", isAdmin: route === "admin", isUnlock: route === "unlock", isNotes: route === "notes",
+      jobs: [
+        ["building-a-quiet-workspace.mp4", "YouTube Downloader", "268 MB", "2m ago", "READY", "var(--ok)"],
+        ["proposal-merged.pdf", "Merge PDF", "3.7 MB", "18m ago", "READY", "var(--ok)"],
+        ["seaside-interview.mp4", "Video Convert", "312 MB", "1h ago", "EXPIRED", "var(--muted)"],
+        ["hero-plates.zip", "Image Convert", "5.9 MB", "3h ago", "EXPIRED", "var(--muted)"],
+        ["podcast-ep41.mp3", "Extract Audio", "62 MB", "yesterday", "PINNED", "var(--accent)"],
+        ["clip-northline.mp4", "TikTok Downloader", "—", "yesterday", "FAILED · 403", "var(--warn)"]
+      ].map(j => ({ name: j[0], tool: j[1], size: j[2], when: j[3], state: j[4], fg: j[5], bd: j[5] === "var(--muted)" ? "var(--line)" : j[5] })),
+      adminStats: [
+        { k: "JOBS · 30D", v: "12,481", note: "+18% vs previous 30 days" },
+        { k: "MEDIAN TIME", v: "41s", note: "p95 is 4m 12s" },
+        { k: "FAILURE RATE", v: "1.9%", note: "mostly private or removed URLs" },
+        { k: "STORAGE", v: "34 GB", note: "auto-purged hourly" }
+      ],
+      chart: [42, 51, 38, 60, 72, 55, 48, 63, 80, 76, 58, 44, 69, 88, 91, 74, 62, 55, 70, 84, 96, 78, 65, 59, 73, 90, 100, 82, 68, 61].map(v => ({ h: v + "%", c: v > 85 ? "var(--accent)" : "var(--line2)" })),
+      adminUsage: [["YouTube Downloader", "4,120"], ["Video Convert", "2,388"], ["Merge PDF", "1,904"], ["Image Convert", "1,441"], ["Universal Social", "986"], ["Compress Video", "742"]].map((u, i) => ({ name: u[0], n: u[1], w: [100, 58, 46, 35, 24, 18][i] + "%" })),
+      shellNotes: [
+        { n: "01", t: "Sticky compact header", d: "Back-to-tools, the tool icon (shared element from the hub tile), name, one-line description and a deps-ready chip. 62px, never grows." },
+        { n: "02", t: "Step indicator", d: "Only when the flow has steps. The active underline slides 240ms; completed dots fill rather than tick." },
+        { n: "03", t: "Single work panel", d: "One column of stacked cards — input, options, advanced. Nothing competes for the eye." },
+        { n: "04", t: "Optional aside (320px)", d: "Preview, estimates and one honest note. Drops below the panel under 1100px; never holds primary controls." },
+        { n: "05", t: "Persistent job bar", d: "Fixed to the viewport bottom with a 3px progress rail on its top edge. Holds status, percent, ETA, cancel, and the primary action." },
+        { n: "06", t: "Result + share row", d: "On completion the bar swaps to a success check, filename, size, share link with copy, and Download result." },
+        { n: "07", t: "Preparing state", d: "First access to a binary-backed tool shows a determinate rail with the dependency name — not a spinner." }
+      ],
+      motions: [
+        { t: "Hub load", spec: "rise 340ms · 26ms stagger", d: "Tiles fade up 12px in row order, capped at 12 stagger slots so long lists never feel slow.", rm: "opacity only, no translate" },
+        { t: "Search / filter", spec: "FLIP 260ms ease-out", d: "Tiles animate to new positions instead of snapping; removed tiles fade in place before the layout settles.", rm: "instant re-layout" },
+        { t: "Hub → tool", spec: "crossfade 260ms", d: "Shell content crossfades while the tool icon and title persist from the tile — a shared-element handoff.", rm: "crossfade only, no icon travel" },
+        { t: "Primary action", spec: "scale .97 · 160ms spring", d: "Confident press feedback, then the progress rail grows from 0 across the bar's top edge.", rm: "colour change on press" },
+        { t: "Dropzone", spec: "200ms ease", d: "Border and fill shift to accent on drag-over; the zone shrinks its padding as file chips slide in from the left at 260ms.", rm: "colour change only" },
+        { t: "Completion", spec: "pop 320ms cubic-bezier(.2,.8,.3,1)", d: "The status dot becomes a filled check that overshoots 3% once. No confetti, no sound.", rm: "check appears without scale" },
+        { t: "Global easing", spec: "200–400ms · (.2,.8,.3,1)", d: "Springs are reserved for elements under 40px — toggles, chips, radio dots. Everything larger uses eased tweens.", rm: "all durations clamp to 0.01ms" }
+      ],
+      states: [
+        { t: "Unsupported URL", d: "Inline under the URL field: “That link isn't a media page we recognise.” Offers the closest matching tool.", where: "TOOL · INPUT CARD", dot: "var(--warn)", bd: "var(--line)" },
+        { t: "Rate limited", d: "Job bar turns quiet, shows a countdown and the limit reason. Queue is preserved and resumes automatically.", where: "TOOL · JOB BAR", dot: "var(--warn)", bd: "var(--line)" },
+        { t: "Oversized upload", d: "The file chip enters, then marks itself over 2 GB with a “compress first” shortcut instead of failing the batch.", where: "TOOL · FILE LIST", dot: "var(--warn)", bd: "var(--line)" },
+        { t: "Job failed", d: "Failure text sits inline in the work panel with the exit code and a Retry that keeps every setting.", where: "TOOL · WORK PANEL", dot: "var(--warn)", bd: "var(--line)" },
+        { t: "Share link landing", d: "Filename, size, expiry countdown, one Save button. No branding wall, no upsell, no second CTA.", where: "/s/[id]", dot: "var(--accent)", bd: "var(--line)" },
+        { t: "Unknown tool slug", d: "404 keeps the hub search focused and pre-filled with the slug, so the recovery is a search result, not a dead end.", where: "/tools/[slug]", dot: "var(--muted)", bd: "var(--line)" }
+      ],
+      rationale: [
+        { t: "One shell, many tools", d: "Every tool is the same four-region layout: sticky header, step rail, work panel, job bar. Only the input zone and the option rows differ, so a new tool is a config object plus one panel — not a new page design." },
+        { t: "Catalogue, not dashboard", d: "The hub is a search-first catalogue with five categories and a recent row. Tiles carry only icon, name, one line and an optional binary flag, so 38 tiles read as a list, not a wall." },
+        { t: "Search before browse", d: "The nav's search field goes straight to the hub with focus. Past roughly twenty tools most people type rather than scan; the filter chips exist for the people who don't." },
+        { t: "Hierarchy by weight", d: "One display face at a big size per screen, everything else 13–16px. Colour never carries hierarchy, so retheming — or a customer's own palette — cannot break the reading order." },
+        { t: "Density is contextual", d: "The hub is dense on purpose. Tool pages are calm: one focus column, an optional 320px aside, and no more than three cards visible before you scroll." },
+        { t: "Honest capability copy", d: "“Needs binary”, “best effort”, “public posts only” appear where the limit bites. Trust is the product here, and undersold beats surprised." }
+      ],
+      tokens: [
+        { k: "--paper", v: "var(--paper)", d: "page ground" },
+        { k: "--surface", v: "var(--surface)", d: "cards, fields" },
+        { k: "--ink", v: "var(--ink)", d: "primary text, solid CTA" },
+        { k: "--ink2", v: "var(--ink2)", d: "secondary text" },
+        { k: "--muted", v: "var(--muted)", d: "meta, mono labels" },
+        { k: "--line", v: "var(--line)", d: "hairlines" },
+        { k: "--accent", v: "var(--accent)", d: "selection, progress" },
+        { k: "--accent-soft", v: "var(--accent-soft)", d: "selected fill" }
+      ],
+      components: ["Nav", "Theme toggle", "Search", "Category chip", "Tool tile", "Empty state", "URL field", "Dropzone", "File list", "Format picker", "Option panel", "Trimmer", "Progress row", "Batch queue", "Result bar", "Share row", "Password modal", "Admin table", "Unlock form"],
+
+      // job bar
+      jobIdle: job === "idle", jobRunning: job === "running", jobDone: job === "done",
+      pct: Math.round(st.pct), eta: st.pct > 60 ? "0:12" : st.pct > 25 ? "1:04" : "2:31",
+      jobLabel: isYT ? "Downloading · 1080p H.264" : isSocial ? "Fetching from TikTok" : "Processing " + t.name.toLowerCase(),
+      doneLabel: isYT ? "Saved — building-a-quiet-workspace.mp4" : "Done — " + t.name.toLowerCase() + " complete",
+      doneMeta: isYT ? "268 MB · 3m 41s" : "expires in 1h",
+      readyLine: hasInput ? "Ready — " + (isYT ? "1080p · MP3 extract" : t.name) : (isYT || isSocial ? "Paste a link to enable" : isQR ? "Ready to export" : "Add files to enable"),
+      ctaLabel, ctaBg: job === "running" ? "var(--paper2)" : "var(--ink)", ctaFg: job === "running" ? "var(--muted)" : "var(--paper)", primaryAction, cancelJob: self.cancelJob
+    };
+  }
+}
+
+</script>
+</body>
+</html>
